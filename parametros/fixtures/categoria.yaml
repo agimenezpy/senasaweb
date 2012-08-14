@@ -1,0 +1,24 @@
+- model: parametros.categoria
+  pk: SJS
+  fields:
+    nombre: Situación de Junta de Saneamiento
+- model: parametros.categoria
+  pk: PRO
+  fields:
+    nombre: Proceso
+- model: parametros.categoria
+  pk: EST
+  fields:
+    nombre: Estado Actual
+- model: parametros.categoria
+  pk: ORG
+  fields:
+    nombre: Tipo de Organización
+- model: parametros.categoria
+  pk: PROD
+  fields:
+    nombre: Nombre de Producto
+- model: parametros.categoria
+  pk: POB
+  fields:
+    nombre: Tipo de Población

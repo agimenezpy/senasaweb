@@ -1,0 +1,96 @@
+- model: parametros.Tipo
+  pk: 1
+  fields:
+    etiqueta: Conformada
+    orden: 1
+    categoria: SJS
+- model: parametros.Tipo
+  pk: 2
+  fields:
+    etiqueta: No Conformada
+    orden: 2
+    categoria: SJS
+- model: parametros.Tipo
+  pk: 3
+  fields:
+    etiqueta: Diseño
+    orden: 1
+    categoria: PRO
+- model: parametros.Tipo
+  pk: 4
+  fields:
+    etiqueta: Llamado
+    orden: 2
+    categoria: PRO
+- model: parametros.Tipo
+  pk: 5
+  fields:
+    etiqueta: Ejecución
+    orden: 3
+    categoria: PRO
+- model: parametros.Tipo
+  pk: 6
+  fields:
+    etiqueta: Finalizado
+    orden: 4
+    categoria: PRO
+- model: parametros.Tipo
+  pk: 8
+  fields:
+    etiqueta: Comisión
+    orden: 1
+    categoria: ORG
+- model: parametros.Tipo
+  pk: 9
+  fields:
+    etiqueta: Junta
+    orden: 2
+    categoria: ORG
+- model: parametros.Tipo
+  pk: 10
+  fields:
+    etiqueta: Comunidad Indígena
+    orden: 3
+    categoria: ORG
+- model: parametros.Tipo
+  pk: 11
+  fields:
+    etiqueta: Suministro de Agua Potable
+    orden: 1
+    categoria: PRO
+- model: parametros.Tipo
+  pk: 12
+  fields:
+    etiqueta: Soluciones Sanitarias Mejoradas
+    orden: 2
+    categoria: PRO
+- model: parametros.Tipo
+  pk: 13
+  fields:
+    etiqueta: Unidades Básicas Sanitarias
+    orden: 3
+    categoria: PRO
+- model: parametros.Tipo
+  pk: 14
+  fields:
+    etiqueta: Letrinas
+    orden: 4
+    categoria: PRO
+- model: parametros.Tipo
+  pk: 15
+  fields:
+    etiqueta: Alcantarillado Sanitario Condominial
+    orden: 5
+    categoria: PRO
+- model: parametros.Tipo
+  pk: 16
+  fields:
+    etiqueta: Rural
+    orden: 1
+    categoria: POB
+- model: parametros.Tipo
+  pk: 17
+  fields:
+    etiqueta: Indígena
+    orden: 2
+    categoria: POB
