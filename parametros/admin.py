@@ -1,25 +1,62 @@
+# -*- coding: iso-8859-1 -*-
 from django.contrib import admin
 from django.contrib.gis import admin as gisadmin
 from models import *
 from django.conf import settings
-from dojango.forms.widgets import SimpleTextarea
+from dojango.forms.widgets import SimpleTextarea,NumberTextInput
+
 class DepartamentoAdmin(gisadmin.GeoModelAdmin):
     list_display = ('codigo','nombre')
+    list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
+    fieldsets = (
+        (None, {
+            'fields' : ('codigo','nombre')
+        }),
+        (u"Información Geográfica", {
+            'classes' : ('collapse',),
+            'fields' : ('geom',)
+        })
+    )
 
 class DistritoAdmin(gisadmin.GeoModelAdmin):
     list_display = ('codigo','nombre','departamento')
+    list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
-    list_filter = ('departamento',)
+    list_filter = ('departamento__nombre',)
     list_select_related = True
+
+    fieldsets = (
+        (None, {
+            'fields' : ('nombre','departamento')
+        }),
+        (u"Información Geográfica", {
+            'classes' : ('collapse',),
+            'fields' : ('geom',)
+        })
+    )
+    exclude = ('codigo',)
 
 class LocalidadAdmin(gisadmin.GeoModelAdmin):
     list_display = ('codigo','nombre','distrito_nombre')
+    list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
-    search_fields = ('nombre','distrito')
+    search_fields = ('nombre','distrito__nombre')
+    list_filter = ('distrito__departamento__nombre',)
     list_select_related = True
+    fieldsets = (
+        (None, {
+            'fields' : ('nombre','distrito')
+        }),
+        (u"Información Geográfica", {
+            'classes' : ('collapse',),
+            'fields' : ('geom',)
+        })
+    )
+    raw_id_fields = ('distrito',)
+    exclude = ('codigo',)
 
     def distrito_nombre(self,obj):
         return obj.distrito.nombre
@@ -30,34 +67,51 @@ class ProyectoAdmin(admin.ModelAdmin):
     list_display = ('id','nombre','monto_proyecto')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
-    formfield_overrides = {models.TextField: {'widget' : SimpleTextarea(attrs={"required":True})}}
-
+    formfield_overrides = {models.TextField: {
+                            'widget' : SimpleTextarea(attrs = {"required":True})},
+                           models.DecimalField : {
+                            'widget' : NumberTextInput(attrs = {"required":True})}
+                           }
+    raw_id_fields = ("lider",)
     def monto_proyecto(self, obj):
         return "%s %.2f" % (obj.moneda, obj.presupuesto)
     monto_proyecto.admin_order_field = 'presupuesto'
     monto_proyecto.short_description = u"monto presupuesto"
 
+class MiembrosInline(admin.TabularInline):
+    model = Miembro
+    raw_id_fields = ("usuario",)
+    extra = 0
+
 class GrupoAdmin(admin.ModelAdmin):
-    list_display = ('id','nombre','monto_grupo', 'proyecto')
+    list_display = ('id','nombre','monto_grupo', 'monto_proyecto', 'proyecto')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
-    list_filter = ('proyecto',)
+    list_filter = ('proyecto__nombre',)
     list_select_related = True
+    formfield_overrides = {models.DecimalField : {
+                             'widget' : NumberTextInput(attrs = {"required":True})}}
+    inlines = (MiembrosInline,)
 
     def monto_grupo(self, obj):
         return "%s %.2f" % (obj.proyecto.moneda, obj.presupuesto)
     monto_grupo.admin_order_field = 'presupuesto'
     monto_grupo.short_description = u"monto presupuesto"
 
+    def monto_proyecto(self, obj):
+        return "%s %.2f" % (obj.proyecto.moneda, obj.proyecto.presupuesto)
+    monto_proyecto.admin_order_field = 'proyecto__presupuesto'
+
 class TipoAdmin(admin.ModelAdmin):
     list_display = ('id','orden','etiqueta','categoria')
     list_per_page = settings.LIST_PER_PAGE
-    list_filter = ('categoria',)
+    list_filter = ('categoria__nombre',)
     list_select_related = True
 
 class CategoriaAdmin(admin.ModelAdmin):
     list_display = ('codigo','nombre')
     list_per_page = settings.LIST_PER_PAGE
+    search_fields = ('codigo',)
 
 # Localidad
 admin.site.register(Departamento, DepartamentoAdmin)

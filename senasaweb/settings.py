@@ -7,7 +7,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('Alberto Gimenez', 'alberto.gimenez@pykoder.com'),
 )
 
 MANAGERS = ADMINS
@@ -59,7 +59,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(ROOT_DIR, "public")
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -70,6 +70,8 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(CONFIG_DIR, "static"),
+    ('dojo-media',os.path.join(ROOT_DIR, "dojango"+ os.path.sep + "dojo-media")),
 )
 
 # List of finder classes that know how to find static files in
@@ -151,16 +153,17 @@ LOGGING = {
 }
 LIST_PER_PAGE = 15
 #SESSION_ENGINE = "django.contrib.sessions.backends.file"
-SPATIALITE_LIBRARY_PATH = "C:/Users/Sony/OSGeo4W/bin/libspatialite-1.dll"
-GDAL_LIBRARY_PATH = "C:/Users/Sony/OSGeo4W/gdalwin32-1.6/bin/gdal16.dll"
+if os.name == "nt":
+    SPATIALITE_LIBRARY_PATH = "C:/Users/Sony/OSGeo4W/bin/libspatialite-1.dll"
+    GDAL_LIBRARY_PATH = "C:/Users/Sony/OSGeo4W/gdalwin32-1.6/bin/gdal16.dll"
 
 # DOJANGO
 DOJANGO_DOJO_PROFILE = "local_release"
 DOJANGO_DOJO_VERSION = "1.7.3"
 DOJANGO_DOJO_THEME = "claro"
+DOJANGO_BASE_MEDIA_URL = 'dojo-media'
+DOJANGO_BASE_MEDIA_URL = "/static/" + DOJANGO_BASE_MEDIA_URL
 
-#DOJANGO_DOJO_BUILD_PROFILE = "dojango_optimized"
-#DOJANGO_DOJO_BUILD_VERSION = "1.7.3"
 
 
 

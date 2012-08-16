@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 from django.db import models
 from django.contrib.gis.db import models as gismodels
-from seguridad.models import Usuario
+from django.contrib.auth.models import User as Usuario
 
 class Departamento(gismodels.Model):
     codigo = models.IntegerField(u"código",primary_key=True)
@@ -22,7 +22,7 @@ class Distrito(gismodels.Model):
     codigo = models.CharField(u"código",primary_key=True,max_length=4)
     nombre = models.CharField(u"nombre",max_length=150)
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
-    departamento = models.ForeignKey(Departamento, verbose_name="departamento",on_delete=models.DO_NOTHING)
+    departamento = models.ForeignKey(Departamento, verbose_name="departamento",on_delete=models.PROTECT)
     objects = gismodels.GeoManager()
 
     def __unicode__(self):
@@ -43,7 +43,7 @@ class Localidad(gismodels.Model):
     codigo = models.CharField(u"código",primary_key=True,max_length=4)
     nombre = models.CharField(u"nombre",max_length=150)
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
-    distrito = models.ForeignKey(Distrito, verbose_name="distrito",on_delete=models.DO_NOTHING)
+    distrito = models.ForeignKey(Distrito, verbose_name="distrito",on_delete=models.PROTECT)
     objects = gismodels.GeoManager()
 
     def __unicode__(self):
@@ -62,11 +62,11 @@ class Localidad(gismodels.Model):
 
 class Proyecto(models.Model):
     nombre = models.CharField(u"nombre de programa", max_length=30)
-    descripcion = models.TextField(u"Descripción",null=True,max_length=200)
+    descripcion = models.TextField(u"Descripción",null=True,max_length=200,help_text="Resumen descriptivo proyecto")
     presupuesto = models.DecimalField(u"presupuesto previsto",max_digits=15,decimal_places=2,default=0)
     ejecutado = models.DecimalField(u"presupuesto ejecutado",max_digits=15,decimal_places=2,default=0)
     moneda = models.CharField(u"moneda",max_length=3,choices=(("USD",u"Dolares"),("PYG",u"Guaraníes")),default="USD",null=True)
-    lider = models.ForeignKey(Usuario, verbose_name=u"responsable de proyecto", null=True,on_delete=models.DO_NOTHING)
+    lider = models.ForeignKey(Usuario, verbose_name=u"responsable de proyecto", null=True,on_delete=models.PROTECT)
 
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.nombre)
@@ -80,15 +80,11 @@ class Grupo(models.Model):
     nombre = models.CharField(u"grupo de trabajo",max_length=50)
     presupuesto = models.DecimalField(u"presupuesto previsto",max_digits=15,decimal_places=2,default=0)
     ejecutado = models.DecimalField(u"presupuesto ejecutado",max_digits=15,decimal_places=2,default=0)
-    proyecto = models.ForeignKey(Proyecto, verbose_name=u"proyecto de inversión",on_delete=models.DO_NOTHING)
-    miembros = models.ManyToManyField(Usuario,through='Miembro')
+    proyecto = models.ForeignKey(Proyecto, verbose_name=u"proyecto de inversión",on_delete=models.PROTECT)
+    miembros = models.ManyToManyField(Usuario,through='Miembro',verbose_name="miembros",blank=True)
 
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.nombre)
-
-    def monto_proyecto(self):
-        return "%s %.2f" % (self.proyecto.moneda, self.presupuesto)
-    monto_proyecto.admin_order_field = 'presupuesto'
 
     class Meta:
         verbose_name = u"grupo de obras"
@@ -96,8 +92,8 @@ class Grupo(models.Model):
         db_table = "grupo_trabajo"
 
 class Miembro(models.Model):
-    grupo = models.ForeignKey(Grupo,verbose_name=u"grupo de obras",on_delete=models.DO_NOTHING)
-    usuario = models.ForeignKey(Usuario, verbose_name=u"miembro",on_delete=models.DO_NOTHING)
+    grupo = models.ForeignKey(Grupo,verbose_name=u"grupo de obras",on_delete=models.PROTECT)
+    usuario = models.ForeignKey(Usuario, verbose_name=u"miembro",on_delete=models.PROTECT)
     responsable = models.BooleanField(u"responsable del grupo",default=False)
 
     def __unicode__(self):
@@ -131,10 +127,10 @@ class Tipo(models.Model):
         ) = ("SJS","PRO","EST","ORG","PRO","POB")
     etiqueta = models.CharField(u"etiqueta",max_length=50)
     orden = models.SmallIntegerField(u"secuencia")
-    categoria = models.ForeignKey(Categoria, verbose_name=u"categoría",on_delete=models.DO_NOTHING)
+    categoria = models.ForeignKey(Categoria, verbose_name=u"categoría",on_delete=models.PROTECT)
 
     def __unicode__(self):
-        return u"[%d] %s = %s " % (self.id, self.nombre, self.categoria_id)
+        return u"[%d] %s - %s " % (self.id, self.etiqueta, self.categoria_id)
 
     class Meta:
         verbose_name = "tipo"

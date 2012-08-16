@@ -1,0 +1,33 @@
+html, body {width:100%; height:100%; margin:0; padding:0; overflow:hidden;}
+#container {height: 100%; width: 100%}
+#headerPanel {height: 90px;padding: 0px;}
+#centerPanel {padding: 0px}
+#header {height: 62px;}
+#toolbarPanel {
+    height: 26px;
+    padding: 0px;
+    margin: 0px;
+}
+#toolbarPanel div.dijitContentPane {padding: 0px;}
+#toolbarPanel div.breadcrumbs {padding-top: 8px; border: none; background: none}
+#toolbarPanel.breadcrumbs {background-position: top left}
+.login #wrapcontent{
+    background: white;
+    border: 1px solid #ccc;
+    width: 28em;
+    min-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+/*#logo{background: url(../img/senasa.png) 0 0 no-repeat ; width: 179px; height: 70px;float:left}*/
+
+.login #content-main{float: none}
+#footer {padding:5px;font-size: 10px; color: #999; border-top: 1px solid #ccc}
+#footerPanel {padding: 0px;}
+#content-related {
+    float:none;
+    margin: 0px
+}
+
+#navigation {width: 220px;}
+ul {padding: 0px;}

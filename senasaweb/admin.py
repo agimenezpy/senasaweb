@@ -5,6 +5,8 @@ class MyAdminSite(admin.AdminSite):
     def admin_view(self, view, cacheable=False):
         dojo_collector.add_module("dijit.layout.ContentPane")
         dojo_collector.add_module("dijit.layout.BorderContainer")
+        dojo_collector.add_module("dijit.layout.AccordionContainer")
+        dojo_collector.add_module("dijit.TitlePane")
         return super(MyAdminSite, self).admin_view(view,cacheable)
 site = MyAdminSite()
 admin.site = site

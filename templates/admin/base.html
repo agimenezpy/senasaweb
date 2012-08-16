@@ -5,9 +5,21 @@
 {% block dojango_header_extra %}
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
 {% block extrastyle %}{% endblock %}
+<link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}" />
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
-<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";</script>
+<script type="text/javascript">
+    window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";
+    dojo.ready(function(){
+        dojo.fadeOut({
+            node: dojo.byId('loadingOverlay'),
+            onEnd: function(node){
+                dojo.style(node, 'display', 'none');
+            }
+        }).play()
+        dojo.style("container","visibility", "visible");
+    });
+</script>
 {% block extrahead %}{% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
 {% endblock %}
@@ -16,63 +28,80 @@
 
 <!-- Container -->
 {% block dojango_content %}
-<div id="wrapper" class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}">
-  <div id="container">
-
+{% include 'loading.html' %}
+<div id="container" class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+        data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline', gutters: false" style="visibility: hidden">
     {% if not is_popup %}
-    <!-- Header -->
-    <div id="header">
-        <div id="branding">
-        {% block branding %}{% endblock %}
+    <div id="headerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'">
+        <!-- Header -->
+        <div id="header">
+            <div id="logo"></div>
+            <div id="branding">
+            {% block branding %}{% endblock %}
+            </div>
+            {% if user.is_active and user.is_staff %}
+            <div id="user-tools">
+                {% trans 'Welcome,' %}
+                <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
+            </div>
+            {% endif  %}
         </div>
+        <!-- END Header -->
         {% if user.is_active and user.is_staff %}
-        <div id="user-tools">
-            {% trans 'Welcome,' %}
-            <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
-            {% block userlinks %}
-                {% url 'django-admindocs-docroot' as docsroot %}
-                {% if docsroot %}
-                    <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
-                {% endif %}
-                <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
-                <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+        <div id="toolbarPanel" class="breadcrumbs" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline', gutters: false">
+            <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'leading'">
+            {% block breadcrumbs %}
+                <div class="breadcrumbs">
+                <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+                {% if title %} &rsaquo; {{ title }}{% endif %}
+                </div>
             {% endblock %}
+            </div>
+            <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'trailing'" style="overflow: hidden">
+                <div class="breadcrumbs" style="width: 230px;">
+                {% block userlinks %}
+
+                    {% url 'django-admindocs-docroot' as docsroot %}
+                    {% if docsroot %}
+                        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> |
+                    {% endif %}
+                    <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> |
+                    <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                {% endblock %}
+                </div>
+            </div>
         </div>
         {% endif %}
-        {% block nav-global %}{% endblock %}
     </div>
-    <!-- END Header -->
-    {% block breadcrumbs %}
-      <div class="breadcrumbs">
-      <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-      {% if title %} &rsaquo; {{ title }}{% endif %}
-      </div>
-    {% endblock %}
-
     {% endif %}
 
-    {% block messages %}
-        {% if messages %}
-        <ul class="messagelist">{% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}</ul>
-        {% endif %}
-    {% endblock messages %}
+    {% block nav-global %}{% endblock %}
 
-    <!-- Content -->
-    <div id="content" class="{% block coltype %}colM{% endblock %}">
-        {% block pretitle %}{% endblock %}
-        {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
-        {% block content %}
-        {% block object-tools %}{% endblock %}
-        {{ content }}
-        {% endblock %}
-        {% block sidebar %}{% endblock %}
-        <br class="clear" />
+    <div id="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">
+        {% block messages %}
+            {% if messages %}
+            <ul class="messagelist">{% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}</ul>
+            {% endif %}
+        {% endblock messages %}
+
+        <!-- Content -->
+        <div id="content" class="{% block coltype %}colM{% endblock %}">
+            {% block pretitle %}{% endblock %}
+            {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+            {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+            {% endblock %}
+            <br class="clear" />
+        </div>
+        <!-- END Content -->
     </div>
-    <!-- END Content -->
-    {% block footer %}<div id="footer"></div>{% endblock %}
-  </div>
+    {% block sidebar %}{% endblock %}
+    <div id="footerPanel"  data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'">
+        {% block footer %}<div id="footer">&copy;2012. Servicio Nacional de Saneamiento Ambiental</div>{% endblock %}
+    </div>
 </div>
 <!-- END Container -->
 {% endblock %}
