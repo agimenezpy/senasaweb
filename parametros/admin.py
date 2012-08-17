@@ -72,31 +72,18 @@ class ProyectoAdmin(admin.ModelAdmin):
                            models.DecimalField : {
                             'widget' : NumberTextInput(attrs = {"required":True})}
                            }
-    raw_id_fields = ("lider",)
+
     def monto_proyecto(self, obj):
         return "%s %.2f" % (obj.moneda, obj.presupuesto)
     monto_proyecto.admin_order_field = 'presupuesto'
     monto_proyecto.short_description = u"monto presupuesto"
 
-class MiembrosInline(admin.TabularInline):
-    model = Miembro
-    raw_id_fields = ("usuario",)
-    extra = 0
-
 class GrupoAdmin(admin.ModelAdmin):
-    list_display = ('id','nombre','monto_grupo', 'monto_proyecto', 'proyecto')
+    list_display = ('id','nombre','monto_proyecto','proyecto')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
     list_filter = ('proyecto__nombre',)
     list_select_related = True
-    formfield_overrides = {models.DecimalField : {
-                             'widget' : NumberTextInput(attrs = {"required":True})}}
-    inlines = (MiembrosInline,)
-
-    def monto_grupo(self, obj):
-        return "%s %.2f" % (obj.proyecto.moneda, obj.presupuesto)
-    monto_grupo.admin_order_field = 'presupuesto'
-    monto_grupo.short_description = u"monto presupuesto"
 
     def monto_proyecto(self, obj):
         return "%s %.2f" % (obj.proyecto.moneda, obj.proyecto.presupuesto)

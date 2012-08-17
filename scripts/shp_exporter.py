@@ -1,9 +1,14 @@
+# -*- coding: iso-8859-1 -*-
 from django.contrib.gis import gdal
 import os
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "senasaweb.settings"
-
-ROOT_DIR = "Z:/Desktop/mapas/SGM/"
+from django.db import connection
+from parametros.models import Distrito,Departamento
+if os.name == "nt":
+    ROOT_DIR = "Z:/Desktop/mapas/SGM/"
+else:
+    ROOT_DIR = "/home/agimenez/Desktop/mapas/SGM/"
 MODULE = "parametros"
 
 LOCS = ("00_Asuncion/Departamental/asunwloc.shp",
@@ -18,6 +23,7 @@ LOCS = ("00_Asuncion/Departamental/asunwloc.shp",
 "09_Paraguari/Departamental/paragloc.shp",
 "10_Alto_Parana/Departamental/alpaloc.shp",
 "11_Central/Departamental/centraloc.shp",
+r"12_Neembucu/Departamental/neeloc.shp",
 "13_Amambay/Departamental/amamloc.shp",
 "14_Canindeyu/Departamental/caninloc.shp",
 "15_Pte_Hayes/Departamental/ptehayesloc.shp",
@@ -40,30 +46,46 @@ def dump_file(filename,funcion,name,pk1=None,pk2=None,pk3=None,idx=0):
         if pk1 == None:
             codigo = "%02d" % idx
         else:
-            if pk1:
-                value = str(row.get(pk1))
-                if value:
-                    value = int(value.strip(), 10)
-                    k1 = value
+            try:
+                if pk1:
+                    value = str(row.get(pk1))
+                    if value:
+                        value = int(value.strip(), 10)
+                    else:
+                        d = Departamento.objects.get(geom__contains=row.geom.geos.centroid)
+                        value = d.pk
                 else:
-                    value = rownum
-            else:
-                value = rownum
+                    d = Departamento.objects.get(geom__contains=row.geom.geos.centroid)
+                    value = d.pk
+                k1 = value
+            except Exception,e:
+                print row,connection.queries[-1]['sql'],e
+                value = idx
+                k1 = idx
             codigo = "%02d" % value
 
         if pk2 != None and pk2 not in row.fields:
             pk2 = False
 
         if pk2 != None:
-            if pk2:
-                value = str(row.get(pk2))
-                if value:
-                    value = int(value.strip(), 10)
-                    k2 = value
+            try:
+                if pk2:
+                    value = str(row.get(pk2))
+                    if value:
+                        value = int(value.strip(), 10)
+                    else:
+                        g = row.geom
+                        d = Distrito.objects.filter(departamento_id__exact=idx).get(geom__contains=g.geos.centroid)
+                        value = int(d.pk[2:],10)
                 else:
-                    value = rownum
-            else:
+                    g = row.geom
+                    d = Distrito.objects.filter(departamento_id__exact=idx).get(geom__contains=g.geos.centroid)
+                    value = int(d.pk[2:], 10)
+                k2 = value
+            except Exception, e:
+                print row,connection.queries[-1]['sql'],e
                 value = rownum
+                k2 = None
             codigo += "%02d" % value
 
         if pk3 != None and pk3 not in row.fields:
@@ -88,13 +110,19 @@ def dump_file(filename,funcion,name,pk1=None,pk2=None,pk3=None,idx=0):
                     name = itm
                     break
         nombre = row.get(name)
-        if nombre:
-            funcion(idx,codigo,nombre,row.geom,k1,k2,k3)
+        if not nombre:
+            nombre = 'LOC %d' % rownum
+        try:
+            row.geom
+        except:
+            continue
+            rownum += 1
+        funcion(idx,codigo,nombre,row.geom,k1,k2,k3)
         rownum += 1
 
 def procesar_departamento(*args,**kwargs):
     idx,codigo,nombre,geom,k1 = args[:5]
-    DEP.write(r"""- model: %s.departamento
+    DEP.write(r"""- model: %s.Departamento
   pk: %d
   fields:
     nombre: %s
@@ -103,8 +131,8 @@ def procesar_departamento(*args,**kwargs):
 
 def procesar_distrito(*args,**kwargs):
     idx,codigo,nombre,geom,k1,k2 = args[:6]
-    DIST.write("""- model: %s.distrito
-  pk: %s
+    DIST.write("""- model: %s.Distrito
+  pk: '%s'
   fields:
     nombre: %s
     departamento: %s
@@ -113,7 +141,18 @@ def procesar_distrito(*args,**kwargs):
 
 def procesar_localidad(*args,**kwargs):
     idx,codigo,nombre,geom,k1,k2,k3 = args[:7]
-    print k1,k2,k3,codigo,nombre,geom
+    ##print k1,k2,k3,codigo,nombre#,geom
+    if k1 == None:
+        k1 = 0
+    if k2 == None:
+        k2 = 0
+    LOC.write("""- model: %s.Localidad
+  pk: '%s'
+  fields:
+    nombre: %s
+    distrito: '%s'
+    geom: %s
+""" % (MODULE,codigo,nombre.decode("latin-1").encode("UTF-8"),"%02d%02d" % (k1,k2),geom.hex))
 
 DEP = None
 DIST = None
@@ -131,9 +170,15 @@ def do_dist():
     dump_file(os.path.join(ROOT_DIR,DISTRITOS),procesar_distrito,"DISTRITO","COD_DPTO","COD_DTO")
     DIST.close()
 
+def do_loc():
+    global LOC
+    LOC = open('%s/fixtures/localidad.yaml' % MODULE,'w')
+    dump_file(os.path.join(ROOT_DIR,LOCS[0]), procesar_localidad,"NOMBRE",None,None,"BARRIO",0)
+    for idx in range(1, len(LOCS)):
+        dump_file(os.path.join(ROOT_DIR,LOCS[idx]),procesar_localidad,"DESCLOCA|DESCLOC", "DEPARTAMEN", "DISTRITO", "BARRIO", idx)
+    DEP.close()
+
 if __name__ == "__main__":
     #do_dep()
-    do_dist()
-#    dump_file(os.path.join(ROOT_DIR,LOCS[0]), procesar_localidad,"NOMBRE",None,None,"BARRIO",0)
-#    for idx in range(10, len(LOCS)):
-#        dump_file(os.path.join(ROOT_DIR,LOCS[idx]),procesar_localidad,"DESCLOCA|DESCLOC", "DEPARTAMEN", "DISTRITO", "BARRIO", idx)
+    #do_dist()
+    do_loc()

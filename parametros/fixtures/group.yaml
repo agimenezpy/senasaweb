@@ -1,0 +1,12 @@
+- model: auth.Group
+  pk: 1
+  fields:
+    name: ADMINISTRADOR
+- model: auth.Group
+  pk: 2
+  fields:
+    name: LIDER DE PROYECTO
+- model: auth.Group
+  pk: 3
+  fields:
+    name: EJECUTOR DE OBRAS

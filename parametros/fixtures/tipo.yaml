@@ -57,31 +57,31 @@
   fields:
     etiqueta: Suministro de Agua Potable
     orden: 1
-    categoria: PRO
+    categoria: PRD
 - model: parametros.Tipo
   pk: 12
   fields:
     etiqueta: Soluciones Sanitarias Mejoradas
     orden: 2
-    categoria: PRO
+    categoria: PRD
 - model: parametros.Tipo
   pk: 13
   fields:
     etiqueta: Unidades Básicas Sanitarias
     orden: 3
-    categoria: PRO
+    categoria: PRD
 - model: parametros.Tipo
   pk: 14
   fields:
     etiqueta: Letrinas
     orden: 4
-    categoria: PRO
+    categoria: PRD
 - model: parametros.Tipo
   pk: 15
   fields:
     etiqueta: Alcantarillado Sanitario Condominial
     orden: 5
-    categoria: PRO
+    categoria: PRD
 - model: parametros.Tipo
   pk: 16
   fields:

@@ -62,11 +62,10 @@ class Localidad(gismodels.Model):
 
 class Proyecto(models.Model):
     nombre = models.CharField(u"nombre de programa", max_length=30)
-    descripcion = models.TextField(u"Descripción",null=True,max_length=200,help_text="Resumen descriptivo proyecto")
+    descripcion = models.TextField(u"descripción",null=True,max_length=200,help_text="Resumen descriptivo del proyecto")
     presupuesto = models.DecimalField(u"presupuesto previsto",max_digits=15,decimal_places=2,default=0)
     ejecutado = models.DecimalField(u"presupuesto ejecutado",max_digits=15,decimal_places=2,default=0)
     moneda = models.CharField(u"moneda",max_length=3,choices=(("USD",u"Dolares"),("PYG",u"Guaraníes")),default="USD",null=True)
-    lider = models.ForeignKey(Usuario, verbose_name=u"responsable de proyecto", null=True,on_delete=models.PROTECT)
 
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.nombre)
@@ -77,11 +76,9 @@ class Proyecto(models.Model):
         db_table = "proyecto"
 
 class Grupo(models.Model):
-    nombre = models.CharField(u"grupo de trabajo",max_length=50)
-    presupuesto = models.DecimalField(u"presupuesto previsto",max_digits=15,decimal_places=2,default=0)
-    ejecutado = models.DecimalField(u"presupuesto ejecutado",max_digits=15,decimal_places=2,default=0)
+    nombre = models.CharField(u"grupo de obras",max_length=100)
+    descripcion = models.TextField(u"descripción",null=True,max_length=200,help_text="Resumen descriptivo del grupo")
     proyecto = models.ForeignKey(Proyecto, verbose_name=u"proyecto de inversión",on_delete=models.PROTECT)
-    miembros = models.ManyToManyField(Usuario,through='Miembro',verbose_name="miembros",blank=True)
 
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.nombre)
@@ -89,21 +86,7 @@ class Grupo(models.Model):
     class Meta:
         verbose_name = u"grupo de obras"
         verbose_name_plural = u"grupos de obras"
-        db_table = "grupo_trabajo"
-
-class Miembro(models.Model):
-    grupo = models.ForeignKey(Grupo,verbose_name=u"grupo de obras",on_delete=models.PROTECT)
-    usuario = models.ForeignKey(Usuario, verbose_name=u"miembro",on_delete=models.PROTECT)
-    responsable = models.BooleanField(u"responsable del grupo",default=False)
-
-    def __unicode__(self):
-        return u"Relación miembro (%d, %d)" % (self.grupo_id, self.usuario_id)
-
-    class Meta:
-        verbose_name = u"miembro"
-        verbose_name_plural = u"miembros"
-        db_table = "miembro"
-        unique_together = ('grupo', 'usuario')
+        db_table = "grupo_obra"
 
 class Categoria(models.Model):
     codigo = models.CharField(u"código",max_length=3,primary_key=True)
@@ -124,7 +107,7 @@ class Tipo(models.Model):
      TIPO_ORGANIZACION,
      TIPO_PRODUCTO,
      TIPO_POBLACION,
-        ) = ("SJS","PRO","EST","ORG","PRO","POB")
+        ) = ("SJS","PRO","EST","ORG","PRD","POB")
     etiqueta = models.CharField(u"etiqueta",max_length=50)
     orden = models.SmallIntegerField(u"secuencia")
     categoria = models.ForeignKey(Categoria, verbose_name=u"categoría",on_delete=models.PROTECT)

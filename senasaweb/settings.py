@@ -120,7 +120,8 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'dojango',
     'parametros',
-    'seguridad'
+    'seguridad',
+    'producto',
 )
 
 # A sample logging configuration. The only tangible logging
