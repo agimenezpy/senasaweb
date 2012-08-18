@@ -142,6 +142,20 @@ def procesar_distrito(*args,**kwargs):
 def procesar_localidad(*args,**kwargs):
     idx,codigo,nombre,geom,k1,k2,k3 = args[:7]
     ##print k1,k2,k3,codigo,nombre#,geom
+    if geom.geom_type != 'Polygon':
+        #print k1,k2,k3,codigo,nombre,geom.geom_count,[geom[i].area for i in range(0, geom.geom_count)]
+        marea = max([geom[i].area for i in range(0, geom.geom_count)])
+        geom = filter(lambda it: it.area == marea, geom)[0]
+#        locs = ""
+#        for  i in range(0, geom.geom_count):
+#            locs += "<gml:featureMember fid='%d'>%s</gml:featureMember>\n" % (i, geom[i].gml)
+#        tf = open(ROOT_DIR + "/tmp/" + codigo + ".gml", "w")
+#        tf.write("""<?xml version="1.0" encoding="UTF-8"?>
+#<gml:FeatureCollection xmlns:gml="http://www.opengis.net/gml">
+#%s
+#</gml:FeatureCollection>
+#            """ % locs)
+        #tf.close()
     if k1 == None:
         k1 = 0
     if k2 == None:
@@ -176,7 +190,7 @@ def do_loc():
     dump_file(os.path.join(ROOT_DIR,LOCS[0]), procesar_localidad,"NOMBRE",None,None,"BARRIO",0)
     for idx in range(1, len(LOCS)):
         dump_file(os.path.join(ROOT_DIR,LOCS[idx]),procesar_localidad,"DESCLOCA|DESCLOC", "DEPARTAMEN", "DISTRITO", "BARRIO", idx)
-    DEP.close()
+    LOC.close()
 
 if __name__ == "__main__":
     #do_dep()

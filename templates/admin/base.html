@@ -37,7 +37,7 @@
 
 <!-- Container -->
 {% block dojango_content %}
-<div id="loadingOverlay" class="dojoBlockOverlay" style="position: absolute; top: 0%; left: 0%; width: 100%; height: 100%; background-color: white; z-index: 999; opacity: 0.6"></div>}
+<div id="loadingOverlay" class="dojoBlockOverlay" style="position: absolute; top: 0%; left: 0%; width: 100%; height: 100%; background-color: white; z-index: 999; opacity: 0.6"></div>
 <div id="container" class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
         data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline', gutters: false" style="visibility: hidden;">
     {% if not is_popup %}
