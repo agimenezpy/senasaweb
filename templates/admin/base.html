@@ -6,6 +6,8 @@
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
 {% block extrastyle %}{% endblock %}
 <link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}" />
+
+<script type="text/javascript" src="{% static "js/block.js" %}"></script>
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
 <script type="text/javascript">
@@ -13,11 +15,18 @@
     dojo.ready(function(){
         dojo.fadeOut({
             node: dojo.byId('loadingOverlay'),
+            duration: 1500,
             onEnd: function(node){
                 dojo.style(node, 'display', 'none');
             }
-        }).play()
+        }).play();
         dojo.style("container","visibility", "visible");
+        dojo.query("form").connect("onsubmit", function(e){
+            dojo.block("container");
+        });
+        dojo.query("a").connect("click", function(e){
+            dojo.block("container");
+        });
     });
 </script>
 {% block extrahead %}{% endblock %}
@@ -28,9 +37,9 @@
 
 <!-- Container -->
 {% block dojango_content %}
-{% include 'loading.html' %}
+<div id="loadingOverlay" class="dojoBlockOverlay" style="position: absolute; top: 0%; left: 0%; width: 100%; height: 100%; background-color: white; z-index: 999; opacity: 0.6"></div>}
 <div id="container" class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
-        data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline', gutters: false" style="visibility: hidden">
+        data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline', gutters: false" style="visibility: hidden;">
     {% if not is_popup %}
     <div id="headerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'">
         <!-- Header -->

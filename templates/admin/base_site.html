@@ -1,5 +1,6 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
+{% load navigation %}
 
 {% block title %}{{ title }} | {% trans 'Monitoreo y Seguimiento de Proyectos de Obras' %}{% endblock %}
 
@@ -7,6 +8,4 @@
 <h1 id="site-name">{% trans 'Monitoreo y Seguimiento de Proyectos de Obras' %}</h1>
 {% endblock %}
 
-{% block nav-global %}
-    {% include 'admin/navigation.html' %}
-{% endblock %}
+{% block nav-global %} {% load_navigation %} {% endblock %}

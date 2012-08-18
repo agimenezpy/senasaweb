@@ -2,7 +2,8 @@
 {% if app_list %}
     <div id="navigation" data-dojo-type="dijit.layout.AccordionContainer" data-dojo-props="region: 'left', minSize: 100, splitter: true" >
     {% for app in app_list %}
-        <div data-dojo-type="dijit.layout.ContentPane" title="{% blocktrans with name=app.name %}{{ name }}{% endblocktrans %}">
+        <div data-dojo-type="dijit.layout.ContentPane" title="{% blocktrans with name=app.name %}{{ name }}{% endblocktrans %}"
+                {% if app.name|lower == selected %} selected="true" {% endif %}>
             <ul class="plainlist">
             {% for model in app.models %}
                 <li>
@@ -13,7 +14,12 @@
                 {% endif %}
 
                 {% if model.add_url %}
-                    | <a href="{{ model.add_url }}" class="addlink">{% trans 'Add' %}</a>
+                    | <a id="add_{{ model.name|slugify }}" href="{{ model.add_url }}" class="addlink" >&nbsp;</a>
+                    <div class="dijitHidden">
+                        <span data-dojo-type="dijit.Tooltip" data-dojo-props="connectId: 'add_{{ model.name|slugify }}'">
+                        {% trans 'Add' %} {{ model.name }}
+                        </span>
+                    </div>
                 {% endif %}
                 </li>
             {% endfor %}
@@ -21,4 +27,5 @@
         </div>
     {% endfor %}
     </div>
+
 {% endif %}

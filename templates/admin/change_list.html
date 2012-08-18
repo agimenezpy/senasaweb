@@ -44,10 +44,6 @@
 &rsaquo; <a href="{% url 'admin:app_list' app_label=cl.opts.app_label %}">{{ app_label|capfirst|escape }}</a>
 &rsaquo; {{ cl.opts.verbose_name_plural|capfirst }}
 </div>
-
-{% block leftbar %}
-    {% include 'admin/navigation.html' %}
-{% endblock %}
 {% endblock %}
 {% endif %}
 
@@ -74,18 +70,9 @@
         </p>
         {{ cl.formset.non_form_errors }}
     {% endif %}
-    <div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+    <div class="module{% if cl.has_filters %} filtered_{% endif %}" id="changelist">
       {% block search %}{% search_form cl %}{% endblock %}
       {% block date_hierarchy %}{% date_hierarchy cl %}{% endblock %}
-
-      {% block filters %}
-        {% if cl.has_filters %}
-          <div id="changelist-filter">
-            <h2>{% trans 'Filter' %}</h2>
-            {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
-          </div>
-        {% endif %}
-      {% endblock %}
 
       <form id="changelist-form" action="" method="post"{% if cl.formset.is_multipart %} enctype="multipart/form-data"{% endif %}>{% csrf_token %}
       {% if cl.formset %}
@@ -101,4 +88,15 @@
       </form>
     </div>
   </div>
+{% endblock %}
+
+{% block sidebar %}
+    {% if cl.has_filters %}
+    <div class="module" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'right'" style="width:161px; padding: 0px">
+        <div id="changelist-filter" style="position: relative">
+            <h2>{% trans 'Filter' %}</h2>
+            {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}

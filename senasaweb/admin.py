@@ -7,6 +7,7 @@ class MyAdminSite(admin.AdminSite):
         dojo_collector.add_module("dijit.layout.BorderContainer")
         dojo_collector.add_module("dijit.layout.AccordionContainer")
         dojo_collector.add_module("dijit.TitlePane")
+        dojo_collector.add_module("dijit.Tooltip")
         return super(MyAdminSite, self).admin_view(view,cacheable)
 site = MyAdminSite()
 admin.site = site

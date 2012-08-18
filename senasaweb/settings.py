@@ -92,6 +92,17 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
+)
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -153,10 +164,12 @@ LOGGING = {
     }
 }
 LIST_PER_PAGE = 15
-#SESSION_ENGINE = "django.contrib.sessions.backends.file"
+
 if os.name == "nt":
     SPATIALITE_LIBRARY_PATH = "C:/Users/Sony/OSGeo4W/bin/libspatialite-1.dll"
     GDAL_LIBRARY_PATH = "C:/Users/Sony/OSGeo4W/gdalwin32-1.6/bin/gdal16.dll"
+else:
+    SESSION_ENGINE = "django.contrib.sessions.backends.file"
 
 # DOJANGO
 DOJANGO_DOJO_PROFILE = "local_release"
