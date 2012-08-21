@@ -1,0 +1,48 @@
+- model: parametros.Proyecto
+  pk: 1
+  fields:
+    nombre: Aecid/Bid
+    descripcion: Banco Interamericano de Desarrollo
+    presupuesto: 0
+    ejecutado: 0
+    moneda: USD
+- model: parametros.Proyecto
+  pk: 2
+  fields:
+    nombre: BIRF
+    descripcion: BIRF
+    presupuesto: 0
+    ejecutado: 0
+    moneda: USD
+- model: parametros.Proyecto
+  pk: 3
+  fields:
+    nombre: Cepra
+    descripcion: CEPRA
+    presupuesto: 0
+    ejecutado: 0
+    moneda: USD
+- model: parametros.Proyecto
+  pk: 4
+  fields:
+    nombre: Focem
+    descripcion: FOCEM
+    presupuesto: 0
+    ejecutado: 0
+    moneda: USD
+- model: parametros.Proyecto
+  pk: 5
+  fields:
+    nombre: Fondos locales
+    descripcion: Fondos Locales
+    presupuesto: 0
+    ejecutado: 0
+    moneda: USD
+- model: parametros.Proyecto
+  pk: 6
+  fields:
+    nombre: Proyectos especiales
+    descripcion: Proyectos Especiales
+    presupuesto: 0
+    ejecutado: 0
+    moneda: USD

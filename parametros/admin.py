@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.gis import admin as gisadmin
 from models import *
 from django.conf import settings
-from dojango.forms.widgets import SimpleTextarea,NumberTextInput
+from dojango.forms.widgets import SimpleTextarea,NumberTextInput,TextInput
 
 class DepartamentoAdmin(gisadmin.GeoModelAdmin):
     list_display = ('codigo','nombre')
@@ -12,7 +12,7 @@ class DepartamentoAdmin(gisadmin.GeoModelAdmin):
     search_fields = ('nombre',)
     fieldsets = (
         (None, {
-            'fields' : ('codigo','nombre')
+            'fields' : ('nombre',)
         }),
         (u"Información Geográfica", {
             'classes' : ('collapse',),
@@ -27,7 +27,6 @@ class DistritoAdmin(gisadmin.GeoModelAdmin):
     search_fields = ('nombre',)
     list_filter = ('departamento__nombre',)
     list_select_related = True
-
     fieldsets = (
         (None, {
             'fields' : ('nombre','departamento')
@@ -37,7 +36,6 @@ class DistritoAdmin(gisadmin.GeoModelAdmin):
             'fields' : ('geom',)
         })
     )
-    exclude = ('codigo',)
 
 class LocalidadAdmin(gisadmin.GeoModelAdmin):
     list_display = ('codigo','nombre','distrito_nombre')
@@ -56,7 +54,6 @@ class LocalidadAdmin(gisadmin.GeoModelAdmin):
         })
     )
     raw_id_fields = ('distrito',)
-    exclude = ('codigo',)
 
     def distrito_nombre(self,obj):
         return obj.distrito.nombre

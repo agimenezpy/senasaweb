@@ -1,7 +1,6 @@
 (function(){
     var d = dojo;
     d.declare("dojo._Blocker", null, {
-
         duration: 400,
         opacity: 0.6,
         backgroundColor: "#fff",
@@ -99,3 +98,4 @@
             }
     });
 })();
+

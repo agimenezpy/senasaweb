@@ -21,12 +21,9 @@
             }
         }).play();
         dojo.style("container","visibility", "visible");
-        dojo.query("form").connect("onsubmit", function(e){
-            dojo.block("container");
-        });
-        dojo.query("a").connect("click", function(e){
-            dojo.block("container");
-        });
+    });
+    dojo.addOnUnload(function() {
+       dojo.block("container");
     });
 </script>
 {% block extrahead %}{% endblock %}

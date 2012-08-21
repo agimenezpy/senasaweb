@@ -27,7 +27,7 @@ class Obra(gismodels.Model):
         limit_choices_to={'categoria__exact' : Tipo.TIPO_PRODUCTO})
     cantidad = models.IntegerField("cantidad de producto", default=0)
     poblacion = models.IntegerField(u"población beneficiada", default=0)
-    tipo_poblacion = models.ForeignKey(Tipo, verbose_name="nombre de producto",related_name="+",
+    tipo_poblacion = models.ForeignKey(Tipo, verbose_name=u"tipo de población",related_name="+",
         limit_choices_to={'categoria__exact' : Tipo.TIPO_POBLACION})
     propietario = models.ForeignKey(User, verbose_name="propietario")
 

@@ -19,7 +19,7 @@ class Departamento(gismodels.Model):
         ordering = ["codigo"]
 
 class Distrito(gismodels.Model):
-    codigo = models.CharField(u"código",primary_key=True,max_length=4)
+    codigo = models.CharField(u"código",primary_key=True,max_length=4,editable=False)
     nombre = models.CharField(u"nombre",max_length=150)
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
     departamento = models.ForeignKey(Departamento, verbose_name="departamento",on_delete=models.PROTECT)
@@ -36,11 +36,13 @@ class Distrito(gismodels.Model):
 
     def save(self, *args, **kwargs):
         if self.codigo == None:
-            self.codigo = "%02d%02d" % (self.departamento_id, self.objects.aggregate(models.Max("")) + 1)
+            self.codigo = "%02d%02d" % (self.departamento_id,
+                                        self.objects.filter(departamento_id__exact=self.departamento_id)
+                                                    .aggregate(models.Count("codigo"))["codigo_count"] + 1)
         super(Distrito, self).save(*args, **kwargs)
 
 class Localidad(gismodels.Model):
-    codigo = models.CharField(u"código",primary_key=True,max_length=4)
+    codigo = models.CharField(u"código",primary_key=True,max_length=8,editable=False)
     nombre = models.CharField(u"nombre",max_length=150)
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
     distrito = models.ForeignKey(Distrito, verbose_name="distrito",on_delete=models.PROTECT)
@@ -57,7 +59,9 @@ class Localidad(gismodels.Model):
 
     def save(self, *args, **kwargs):
         if self.codigo == None:
-            self.codigo = "%s%03d" % (self.distrito_id, self.objects.filter(distrito_id__exact=self.distrito_id).count() + 1)
+            self.codigo = "%s%03d" % (self.distrito_id,
+                                      self.objects.filter(distrito_id__exact=self.distrito_id)
+                                                  .aggregate(models.Count("codigo"))["codigo_count"] + 1)
         super(Localidad, self).save(*args, **kwargs)
 
 class Proyecto(models.Model):
