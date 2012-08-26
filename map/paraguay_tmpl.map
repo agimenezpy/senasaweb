@@ -1,0 +1,95 @@
+#include theme
+MAP
+    OUTPUTFORMAT
+        NAME agg
+        DRIVER AGG/PNG
+        IMAGEMODE RGB
+        FORMATOPTION "INTERLACE=false"
+        MIMETYPE "image/png"
+    END
+    FONTSET "fonts.lst"
+    IMAGETYPE agg
+    MAXSIZE 4000
+    SIZE 800 800
+    EXTENT -81414.425199 6950131.660985 778278.875001 7864759.500000
+    UNITS meters
+    IMAGECOLOR _water_clr
+    WEB
+        METADATA
+            wms_srs "epsg:4326 epsg:32721"
+            wms_onlineresource  "http://190.52.178.64/wms?"
+            labelcache_map_edge_buffer "-10"
+            wms_title "Asuncion, PY"
+        END
+    END
+    ##DEBUG 10
+    CONFIG "PROJ_LIB" "/usr/share/proj/"
+    CONFIG "MS_ERRORFILE" "stderr"
+    PROJECTION
+    ##32721
+    "+proj=utm +zone=21 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+    ##"+init=epsg:4326"
+    ##"+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs"
+    END
+    
+    LAYER
+        TYPE POLYGON
+        STATUS DEFAULT
+        GROUP "default"
+        NAME "world"
+        DATA "_shpdir/world_borders.shp"
+        SIZEUNITS pixels
+        MAXSCALEDENOM 100000000
+        EXTENT -180 -90 180.000000 83.623596
+        METADATA
+            wms_srs "epsg:4326"
+            wms_title "world"
+            wms_group_title "default"
+        END
+        PROJECTION
+            "+init=epsg:4326"
+        END
+        CLASS
+            STYLE
+                COLOR _bg_clr
+                OUTLINECOLOR "#B3A895"
+                WIDTH 1
+            END
+        END
+    END
+
+    LAYER
+        TYPE POLYGON
+        STATUS DEFAULT
+        GROUP "default"
+        NAME "departamento"
+        DATA "geom FROM departamento"
+        SIZEUNITS pixels
+        MAXSCALEDENOM 100000000
+        EXTENT -81414.425199 6950131.660985 778278.875001 7864759.500000
+        METADATA
+            wms_srs "epsg:32721 epsg:4326"
+            wms_title "paraguay"
+            wms_group_title "default"
+        END
+        PROJECTION
+            "+proj=utm +zone=21 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs"
+        END
+        CLASS
+            STYLE
+                COLOR _bg_clr
+                OUTLINECOLOR "#B3A895"
+                WIDTH 1
+            END
+            LABEL
+                COLOR 0 0 0
+                OUTLINECOLOR 255 255 255
+                TYPE truetype
+                FONT sc
+                SIZE 6
+                POSITION auto
+                OUTLINEWIDTH 5
+            END
+        END
+    END
+END
