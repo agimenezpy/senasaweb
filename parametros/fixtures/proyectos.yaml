@@ -1,7 +1,7 @@
 - model: parametros.Proyecto
   pk: 1
   fields:
-    nombre: Aecid/Bid
+    nombre: BID
     descripcion: Banco Interamericano de Desarrollo
     presupuesto: 0
     ejecutado: 0

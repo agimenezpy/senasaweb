@@ -3,21 +3,18 @@ from django.db import models
 from django.contrib.gis.db import models as gismodels
 from django.contrib.auth.models import User
 from parametros.models import *
+from datetime import datetime
 
 class Obra(gismodels.Model):
-    descripcion = models.TextField(u"descripción",max_length=200)
     localidad = models.ForeignKey(Localidad, verbose_name="localidad",on_delete=models.PROTECT)
-    programa = models.ForeignKey(Proyecto, verbose_name=u"nombre de programa")
     inicio = models.DateField("inicio de actividades")
     fin = models.DateField("fin de las actividades")
     proceso = models.ForeignKey(Tipo, verbose_name="proceso",related_name="+",
         limit_choices_to={'categoria__exact' : Tipo.TIPO_PROCESO})
-    estado = models.ForeignKey(Tipo, verbose_name="estado actual",related_name="+",
-        limit_choices_to={'categoria__exact' : Tipo.TIPO_ESTADO})
     porcentaje = models.IntegerField("porcentaje de avance", default=0)
     coordenada_x = models.FloatField("coordenada x",default=0)
     coordenada_y = models.FloatField("coordenada y",default=0)
-    ubicacion = gismodels.PointField(u"ubicación geográfica",srid=32721,null=True)
+    ubicacion = gismodels.PointField(u"ubicación geográfica",srid=32721,null=True,blank=True)
     junta = models.ForeignKey(Tipo, verbose_name=u"situación de junta",related_name="+",
         limit_choices_to={'categoria__exact' : Tipo.TIPO_SITUACION})
     organizacion = models.ForeignKey(Tipo, verbose_name=u"tipo de organización",related_name="+",
@@ -29,21 +26,36 @@ class Obra(gismodels.Model):
     poblacion = models.IntegerField(u"población beneficiada", default=0)
     tipo_poblacion = models.ForeignKey(Tipo, verbose_name=u"tipo de población",related_name="+",
         limit_choices_to={'categoria__exact' : Tipo.TIPO_POBLACION})
-    propietario = models.ForeignKey(User, verbose_name="propietario")
+    propietario = models.ForeignKey(User, verbose_name="propietario",null=True)
+    objects = gismodels.GeoManager()
+
+    def __unicode__(self):
+        return u"[%s] %s" % (self.id, self.producto.etiqueta)
 
     class Meta:
         db_table = "obra"
         verbose_name = "obra de infraestructura"
         verbose_name_plural = "obras de infraestructura"
+        ordering = ('id',)
 
-class Commentario(models.Model):
-    descripcion = models.TextField("commentarios",max_length=200)
+class Estado(models.Model):
+    descripcion = models.TextField(u"descripción",max_length=200)
     fecha_insercion = models.DateTimeField("insertado")
     fecha_actualizacion = models.DateTimeField("actualizado")
-    autor = models.ForeignKey(User,verbose_name="autor")
-    obra = models.ForeignKey(Obra, verbose_name="relacionado")
+    autor = models.ForeignKey(User, verbose_name="autor")
+    obra = models.ForeignKey(Obra, verbose_name="obra")
+
+    def __unicode__(self):
+        return u"[%s] %s" % (self.id, self.descripcion)
+
+    def save(self, force_insert=False, force_update=False, using=None):
+        self.autor = self.obra.salva
+        if getattr(self, 'id', None) is None:
+            self.fecha_insercion = datetime.now()
+        self.fecha_actualizacion = datetime.now()
+        super(Estado, self).save(force_insert, force_update, using)
 
     class Meta:
-        db_table = "comentario"
-        verbose_name = "comentario"
-        verbose_name_plural = "comentarios"
+        db_table = "estado"
+        verbose_name = "estado"
+        verbose_name_plural = "estados"

@@ -31,11 +31,9 @@ if __name__ == '__main__':
             GRU.write("""- model: %s.Grupo
   pk: %d
   fields:
-    nombre: %s
     descripcion: %s
     proyecto: %d
 """ % (MODULE, group_id,
-       grupo[:100].decode("latin-1").encode("UTF-8"),
        grupo.decode("latin-1").encode("UTF-8"),
        proy_id))
             group_id += 1

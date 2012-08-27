@@ -8,6 +8,7 @@
 <link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}" />
 
 <script type="text/javascript" src="{% static "js/block.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/field_lookup.js" %}"></script>
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
 <script type="text/javascript">
@@ -21,6 +22,7 @@
             }
         }).play();
         dojo.style("container","visibility", "visible");
+        prepare_lookup();
     });
     dojo.addOnUnload(function() {
        dojo.block("container");

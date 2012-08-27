@@ -3,9 +3,22 @@ from django.contrib import admin
 from django.contrib.gis import admin as gisadmin
 from models import *
 from django.conf import settings
-from dojango.forms.widgets import SimpleTextarea,NumberTextInput,TextInput
+from dojango.forms.widgets import SimpleTextarea,NumberTextInput
 
-class DepartamentoAdmin(gisadmin.GeoModelAdmin):
+class BaseGeoModelAdmin(gisadmin.GeoModelAdmin):
+    max_extent =  '-81414.425199, 6950131.660985, 778278.875001, 7864759.500000'
+    map_srid = 32721
+    wms_url = settings.WMS_SERVICE
+    wms_layer = 'default'
+    wms_name = 'Senasa WMS'
+    units = 'm'
+    max_resolution = "'auto'"
+    num_zoom = 8
+    default_zoom = 0
+    default_lon = 454085
+    default_lat = 7427009
+
+class DepartamentoAdmin(BaseGeoModelAdmin):
     list_display = ('codigo','nombre')
     list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
@@ -20,7 +33,7 @@ class DepartamentoAdmin(gisadmin.GeoModelAdmin):
         })
     )
 
-class DistritoAdmin(gisadmin.GeoModelAdmin):
+class DistritoAdmin(BaseGeoModelAdmin):
     list_display = ('codigo','nombre','departamento')
     list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
@@ -37,7 +50,7 @@ class DistritoAdmin(gisadmin.GeoModelAdmin):
         })
     )
 
-class LocalidadAdmin(gisadmin.GeoModelAdmin):
+class LocalidadAdmin(BaseGeoModelAdmin):
     list_display = ('codigo','nombre','distrito_nombre')
     list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
@@ -75,12 +88,32 @@ class ProyectoAdmin(admin.ModelAdmin):
     monto_proyecto.admin_order_field = 'presupuesto'
     monto_proyecto.short_description = u"monto presupuesto"
 
-class GrupoAdmin(admin.ModelAdmin):
-    list_display = ('id','nombre','monto_proyecto','proyecto')
+class ContactoAdmin(admin.ModelAdmin):
+    list_display = ('cedula', 'nombres', 'apellidos', 'telefono_celular')
+    list_display_links = ('cedula',)
     list_per_page = settings.LIST_PER_PAGE
-    search_fields = ('nombre',)
+    search_fields = ('nombres','apellidos')
+
+class MiembroInline(admin.TabularInline):
+    model = Miembro
+    raw_id_fields = ("usuario",)
+    extra = 0
+
+class GrupoAdmin(admin.ModelAdmin):
+    list_display = ('id','descripcion','monto_proyecto','proyecto')
+    list_per_page = settings.LIST_PER_PAGE
+    search_fields = ('descripcion',)
     list_filter = ('proyecto__nombre',)
     list_select_related = True
+    raw_id_fields = ('contacto',)
+    inlines = (MiembroInline,)
+
+    def queryset(self, request):
+        qs = super(GrupoAdmin, self).queryset(request)
+
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(miembro__usuario_id__exact=request.user.id)
 
     def monto_proyecto(self, obj):
         return "%s %.2f" % (obj.proyecto.moneda, obj.proyecto.presupuesto)
@@ -104,6 +137,7 @@ admin.site.register(Localidad, LocalidadAdmin)
 # Proyecto
 admin.site.register(Proyecto, ProyectoAdmin)
 admin.site.register(Grupo, GrupoAdmin)
+admin.site.register(Contacto, ContactoAdmin)
 # Tipos
 admin.site.register(Categoria, CategoriaAdmin)
 admin.site.register(Tipo, TipoAdmin)

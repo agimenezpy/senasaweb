@@ -1,186 +1,155 @@
 - model: parametros.Grupo
   pk: 1
   fields:
-    nombre: 10 nuevos sistemas de abast. de agua para comunidades Indígenas
     descripcion: 10 nuevos sistemas de abast. de agua para comunidades Indígenas
     proyecto: 1
 - model: parametros.Grupo
   pk: 2
   fields:
-    nombre: 1868 Soluciones Sanitarias Mejoradas complementarias para comunidades rurales
     descripcion: 1868 Soluciones Sanitarias Mejoradas complementarias para comunidades rurales
     proyecto: 1
 - model: parametros.Grupo
   pk: 3
   fields:
-    nombre: 50 nuevos sistemas de abast. de agua potable para comunidades rurales
     descripcion: 50 nuevos sistemas de abast. de agua potable para comunidades rurales
     proyecto: 1
 - model: parametros.Grupo
   pk: 4
   fields:
-    nombre: 71 nuevos sistemas de abast. de agua potable para comunidades rurales
     descripcion: 71 nuevos sistemas de abast. de agua potable para comunidades rurales
     proyecto: 1
 - model: parametros.Grupo
   pk: 5
   fields:
-    nombre: 7  sistemas de abast. de agua y saneamiento complementarios para comunidades Indígenas
     descripcion: 7  sistemas de abast. de agua y saneamiento complementarios para comunidades Indígenas
     proyecto: 1
 - model: parametros.Grupo
   pk: 6
   fields:
-    nombre: 8 nuevos sistemas de abast. de agua potable para comunidades rurales
     descripcion: 8 nuevos sistemas de abast. de agua potable para comunidades rurales
     proyecto: 1
 - model: parametros.Grupo
   pk: 7
   fields:
-    nombre: a Definir una vez finalizados los diseños
     descripcion: a Definir una vez finalizados los diseños
     proyecto: 1
 - model: parametros.Grupo
   pk: 8
   fields:
-    nombre: 1.900 letrinas para poblaciones indígenas
     descripcion: 1.900 letrinas para poblaciones indígenas
     proyecto: 2
 - model: parametros.Grupo
   pk: 9
   fields:
-    nombre: 30 nuevos sistemas de agua para comunidades rurales
     descripcion: 30 nuevos sistemas de agua para comunidades rurales
     proyecto: 2
 - model: parametros.Grupo
   pk: 10
   fields:
-    nombre: 30 nuevos sistemas de agua y saneamiento con letrina para poblaciones indígenas
     descripcion: 30 nuevos sistemas de agua y saneamiento con letrina para poblaciones indígenas
     proyecto: 2
 - model: parametros.Grupo
   pk: 11
   fields:
-    nombre: Construcción de Unidades Sanitarias Básicas
     descripcion: Construcción de Unidades Sanitarias Básicas
     proyecto: 2
 - model: parametros.Grupo
   pk: 12
   fields:
-    nombre: 12 nuevos sistemas de agua potable
     descripcion: 12 nuevos sistemas de agua potable
     proyecto: 3
 - model: parametros.Grupo
   pk: 13
   fields:
-    nombre: 4250 unidades de soluciones sanitarias mejoradas individuales
     descripcion: 4250 unidades de soluciones sanitarias mejoradas individuales
     proyecto: 3
 - model: parametros.Grupo
   pk: 14
   fields:
-    nombre: 50 nuevos sistemas de agua para asentamientos campesinos 2
     descripcion: 50 nuevos sistemas de agua para asentamientos campesinos 2
     proyecto: 3
 - model: parametros.Grupo
   pk: 15
   fields:
-    nombre: 6400 unid. De soluciones sanitarias mejoradas en asentamientos campesinos
     descripcion: 6400 unid. De soluciones sanitarias mejoradas en asentamientos campesinos
     proyecto: 3
 - model: parametros.Grupo
   pk: 16
   fields:
-    nombre: 74 sistemas   de agua existentes  mejorados o ampliados para asentamientos campesinos.
     descripcion: 74 sistemas   de agua existentes  mejorados o ampliados para asentamientos campesinos.
     proyecto: 3
 - model: parametros.Grupo
   pk: 17
   fields:
-    nombre: Mejoramiento de sistemas existenes con construccion de 1 Caseta de operaciones
     descripcion: Mejoramiento de sistemas existenes con construccion de 1 Caseta de operaciones
     proyecto: 3
 - model: parametros.Grupo
   pk: 18
   fields:
-    nombre: Mejoramiento de sistemas existentes con la construccion de 1 Tanque Elevado
     descripcion: Mejoramiento de sistemas existentes con la construccion de 1 Tanque Elevado
     proyecto: 3
 - model: parametros.Grupo
   pk: 19
   fields:
-    nombre: 19 nuevos sistemas de agua y saneamiento con letrinas para poblaciones indígenas
     descripcion: 19 nuevos sistemas de agua y saneamiento con letrinas para poblaciones indígenas
     proyecto: 4
 - model: parametros.Grupo
   pk: 20
   fields:
-    nombre: 50 nuevos sistemas de agua potable para poblaciones rurales o urbanas rurales
     descripcion: 50 nuevos sistemas de agua potable para poblaciones rurales o urbanas rurales
     proyecto: 4
 - model: parametros.Grupo
   pk: 21
   fields:
-    nombre: 55 nuevos sistemas de agua para comunidades rurales
     descripcion: 55 nuevos sistemas de agua para comunidades rurales
     proyecto: 4
 - model: parametros.Grupo
   pk: 22
   fields:
-    nombre: 63 nuevos sistemas de agua para comunidades rurales
     descripcion: 63 nuevos sistemas de agua para comunidades rurales
     proyecto: 4
 - model: parametros.Grupo
   pk: 23
   fields:
-    nombre: 10 sistemas de abastecimiento de agua y saneamiento en comunidades rurales
     descripcion: 10 sistemas de abastecimiento de agua y saneamiento en comunidades rurales
     proyecto: 5
 - model: parametros.Grupo
   pk: 24
   fields:
-    nombre: 175 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
     descripcion: 175 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
     proyecto: 5
 - model: parametros.Grupo
   pk: 25
   fields:
-    nombre: 176 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
     descripcion: 176 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
     proyecto: 5
 - model: parametros.Grupo
   pk: 26
   fields:
-    nombre: 32 nuevos sistemas de agua y saneamiento y 1790 Soluciones Sanitarias Mejoradas para comunidades de 
     descripcion: 32 nuevos sistemas de agua y saneamiento y 1790 Soluciones Sanitarias Mejoradas para comunidades de la Región Oriental
     proyecto: 5
 - model: parametros.Grupo
   pk: 27
   fields:
-    nombre: 3 ampliaciones de sistemas de agua para comunidades rurales
     descripcion: 3 ampliaciones de sistemas de agua para comunidades rurales
     proyecto: 5
 - model: parametros.Grupo
   pk: 28
   fields:
-    nombre: 8 sistemas de abast. de agua para poblaciones indígenas
     descripcion: 8 sistemas de abast. de agua para poblaciones indígenas
     proyecto: 5
 - model: parametros.Grupo
   pk: 29
   fields:
-    nombre: 150 Unidades Sanitarias Básicas
     descripcion: 150 Unidades Sanitarias Básicas
     proyecto: 6
 - model: parametros.Grupo
   pk: 30
   fields:
-    nombre: 175 Unidades Sanitarias Básicas
     descripcion: 175 Unidades Sanitarias Básicas
     proyecto: 6
 - model: parametros.Grupo
   pk: 31
   fields:
-    nombre: 300 Unidades Sanitarias Básicas
     descripcion: 300 Unidades Sanitarias Básicas
     proyecto: 6

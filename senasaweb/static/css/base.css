@@ -33,3 +33,13 @@ html, body {width:100%; height:100%; margin:0; padding:0; overflow:hidden;}
 ul {padding: 0px;}
 .dojoBlockOverlay {background: #fff url(../img/loading.gif) no-repeat center center;}
 .calendarbox {z-index: 3}
+.colMTab { padding: 0px; height:100% }
+.colMTab h2 {display: none}
+.colMTab .module {border: none;}
+.colMTab .dijitContentPane {
+    padding: 0px;
+    border: none;
+}
+.results {
+    overflow-x: auto;
+}

@@ -20,6 +20,7 @@ MAP
             wms_onlineresource  "http://190.52.178.64/wms?"
             labelcache_map_edge_buffer "-10"
             wms_title "Asuncion, PY"
+            wms_enable_request "*"
         END
     END
     ##DEBUG 10
@@ -37,7 +38,7 @@ MAP
         STATUS DEFAULT
         GROUP "default"
         NAME "world"
-        DATA "_shpdir/world_borders.shp"
+        DATA "world_borders.shp"
         SIZEUNITS pixels
         MAXSCALEDENOM 100000000
         EXTENT -180 -90 180.000000 83.623596
@@ -59,6 +60,8 @@ MAP
     END
 
     LAYER
+        CONNECTIONTYPE postgis
+        CONNECTION _db_connection
         TYPE POLYGON
         STATUS DEFAULT
         GROUP "default"

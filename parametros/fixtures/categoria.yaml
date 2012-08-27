@@ -7,10 +7,6 @@
   fields:
     nombre: Proceso
 - model: parametros.Categoria
-  pk: EST
-  fields:
-    nombre: Estado Actual
-- model: parametros.Categoria
   pk: ORG
   fields:
     nombre: Tipo de Organización

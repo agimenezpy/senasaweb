@@ -2,12 +2,16 @@
 from django.db import models
 from django.contrib.gis.db import models as gismodels
 from django.contrib.auth.models import User as Usuario
+from django.core.validators import RegexValidator
 
 class Departamento(gismodels.Model):
     codigo = models.IntegerField(u"código",primary_key=True)
     nombre = models.CharField(u"nombre",max_length=150)
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
     objects = gismodels.GeoManager()
+
+    def get_extent(self):
+        return self.geom.extent
 
     def __unicode__(self):
         return u"[%d] %s" % (self.codigo, self.nombre)
@@ -24,6 +28,9 @@ class Distrito(gismodels.Model):
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
     departamento = models.ForeignKey(Departamento, verbose_name="departamento",on_delete=models.PROTECT)
     objects = gismodels.GeoManager()
+
+    def get_extent(self):
+        return self.geom.extent
 
     def __unicode__(self):
         return u"[%s] %s" % (self.codigo, self.nombre)
@@ -47,6 +54,9 @@ class Localidad(gismodels.Model):
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
     distrito = models.ForeignKey(Distrito, verbose_name="distrito",on_delete=models.PROTECT)
     objects = gismodels.GeoManager()
+
+    def get_extent(self):
+        return self.geom.extent
 
     def __unicode__(self):
         return u"[%s] %s" % (self.codigo, self.nombre)
@@ -79,18 +89,50 @@ class Proyecto(models.Model):
         verbose_name_plural = u"proyectos de inversión"
         db_table = "proyecto"
 
-class Grupo(models.Model):
-    nombre = models.CharField(u"grupo de obras",max_length=100)
-    descripcion = models.TextField(u"descripción",null=True,max_length=200,help_text="Resumen descriptivo del grupo")
-    proyecto = models.ForeignKey(Proyecto, verbose_name=u"proyecto de inversión",on_delete=models.PROTECT)
+class Contacto(models.Model):
+    cedula = models.IntegerField(u"cédula de identidad",primary_key=True)
+    nombres = models.CharField("nombres",max_length=60)
+    apellidos = models.CharField("apellidos",max_length=80)
+    telefono_celular = models.CharField("celular", max_length=15,validators=[RegexValidator("09[6789]\d{7,7}")],
+        help_text=u"introduzca el número de telefono. Ej 0981321123")
 
     def __unicode__(self):
-        return u"[%d] %s" % (self.id, self.nombre)
+        return u"[%d] %s %s" % (self.cedula, self.nombres, self.apellidos)
+
+    class Meta:
+        verbose_name = "contacto"
+        verbose_name_plural = "contactos"
+        db_table = "contacto"
+
+class Grupo(models.Model):
+    codigo = models.CharField(u"código",max_length=30,null=True,blank=True)
+    descripcion = models.TextField(u"descripción",max_length=200,help_text="Resumen descriptivo del grupo")
+    llamado = models.IntegerField("identificador de llamado",null=True,blank=True)
+    proyecto = models.ForeignKey(Proyecto, verbose_name=u"proyecto de inversión",on_delete=models.PROTECT)
+    contacto = models.ForeignKey(Contacto, verbose_name=u"contacto",on_delete=models.PROTECT, null=True,blank=True)
+
+    def __unicode__(self):
+        return u"[%d] %s" % (self.id, self.descripcion)
 
     class Meta:
         verbose_name = u"grupo de obras"
         verbose_name_plural = u"grupos de obras"
         db_table = "grupo_obra"
+        ordering = ('id',)
+
+class Miembro(models.Model):
+    grupo = models.ForeignKey(Grupo,verbose_name=u"grupo de obras",on_delete=models.PROTECT)
+    usuario = models.ForeignKey(Usuario, verbose_name=u"miembro",on_delete=models.PROTECT)
+    responsable = models.BooleanField(u"responsable del grupo",default=False)
+
+    def __unicode__(self):
+        return u"Relación miembro (%d, %d)" % (self.grupo_id, self.usuario_id)
+
+    class Meta:
+        verbose_name = u"miembro"
+        verbose_name_plural = u"miembros"
+        db_table = "miembro"
+        unique_together = ('grupo', 'usuario')
 
 class Categoria(models.Model):
     codigo = models.CharField(u"código",max_length=3,primary_key=True)
@@ -107,11 +149,10 @@ class Categoria(models.Model):
 class Tipo(models.Model):
     (TIPO_SITUACION,
      TIPO_PROCESO,
-     TIPO_ESTADO,
      TIPO_ORGANIZACION,
      TIPO_PRODUCTO,
      TIPO_POBLACION,
-        ) = ("SJS","PRO","EST","ORG","PRD","POB")
+        ) = ("SJS","PRO","ORG","PRD","POB")
     etiqueta = models.CharField(u"etiqueta",max_length=50)
     orden = models.SmallIntegerField(u"secuencia")
     categoria = models.ForeignKey(Categoria, verbose_name=u"categoría",on_delete=models.PROTECT)
