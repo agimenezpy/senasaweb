@@ -4,6 +4,7 @@ from django.contrib.gis import admin as gisadmin
 from django.conf import settings
 from producto.models import *
 from parametros.admin import BaseGeoModelAdmin
+from parametros.models import *
 
 class EstadoInline(admin.TabularInline):
     model = Estado
@@ -14,6 +15,7 @@ class ObraAdmin(BaseGeoModelAdmin):
     list_display = ('id','localidad','inicio','fin','grupo','porcentaje','producto')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('producto__etiqueta',)
+    list_filter = ('grupo__proyecto__nombre',)
     list_select_related = True
     inlines = (EstadoInline,)
     readonly_fields = ('propietario',)
@@ -37,8 +39,15 @@ class ObraAdmin(BaseGeoModelAdmin):
     def queryset(self, request):
         qs = super(ObraAdmin, self).queryset(request)
 
-        if request.user.is_superuser:
+        is_user_admin = False
+        rs = request.user.groups.filter(name="ADMINISTRADOR")
+        if len(rs) > 0:
+            is_user_admin = True
+        if request.user.is_superuser or is_user_admin:
             return qs
+        rs = request.user.groups.filter(name="LIDER DE PROYECTO")
+        if len(rs) > 0:
+            return qs.filter(grupo__proyecto__miembro__usuario_id__exact=request.user.id)
         return qs.filter(grupo__miembro__usuario_id__exact=request.user.id)
 
     def save_model(self, request, obj, form, change):
@@ -51,4 +60,12 @@ class ObraAdmin(BaseGeoModelAdmin):
         obj.salva = request.user
         obj.save()
 
+class ContactoAdmin(admin.ModelAdmin):
+    list_display = ('cedula', 'nombres', 'apellidos', 'telefono_celular')
+    list_display_links = ('cedula',)
+    list_per_page = settings.LIST_PER_PAGE
+    search_fields = ('nombres','apellidos')
+    raw_id_fields = ('obra',)
+
 admin.site.register(Obra, ObraAdmin)
+admin.site.register(Contacto, ContactoAdmin)

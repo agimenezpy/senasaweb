@@ -166,10 +166,10 @@ LOGGING = {
 LIST_PER_PAGE = 15
 
 if os.name == "nt":
-    SPATIALITE_LIBRARY_PATH = "C:/Users/Sony/OSGeo4W/bin/libspatialite-1.dll"
-    GDAL_LIBRARY_PATH = "C:/Users/Sony/OSGeo4W/gdalwin32-1.6/bin/gdal16.dll"
+    SPATIALITE_LIBRARY_PATH = "C:/OSGeo4W/bin/libspatialite-1.dll"
+    GDAL_LIBRARY_PATH = "C:/OSGeo4W/gdalwin32-1.6/bin/gdal16.dll"
     DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.spatialite'
-    DATABASES['default']['NAME'] = 'senasaweb.sqlite'
+    DATABASES['default']['NAME'] = os.path.join(ROOT_DIR,'senasaweb.sqlite')
 else:
     SESSION_ENGINE = "django.contrib.sessions.backends.file"
 
@@ -180,5 +180,5 @@ DOJANGO_DOJO_THEME = "claro"
 DOJANGO_BASE_MEDIA_URL = 'dojo-media'
 DOJANGO_BASE_MEDIA_URL = "/static/" + DOJANGO_BASE_MEDIA_URL
 
-WMS_SERVICE = "http://190.52.178.64/wms"
+WMS_SERVICE = "http://www.senasa.gov.py/senasaweb/wms"
 

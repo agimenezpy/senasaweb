@@ -1,4 +1,5 @@
 from parametros.models import *
+from producto.models import *
 from dojango.data.modelstore import *
 
 class BaseStore(Store):

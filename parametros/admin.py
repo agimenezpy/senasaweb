@@ -73,6 +73,11 @@ class LocalidadAdmin(BaseGeoModelAdmin):
     distrito_nombre.admin_order_field = 'distrito'
     distrito_nombre.short_description = u"distrito"
 
+class MiembroInline(admin.TabularInline):
+    model = Miembro
+    raw_id_fields = ("usuario",)
+    extra = 0
+
 class ProyectoAdmin(admin.ModelAdmin):
     list_display = ('id','nombre','monto_proyecto')
     list_per_page = settings.LIST_PER_PAGE
@@ -82,22 +87,22 @@ class ProyectoAdmin(admin.ModelAdmin):
                            models.DecimalField : {
                             'widget' : NumberTextInput(attrs = {"required":True})}
                            }
+    inlines = (MiembroInline,)
+
+    def queryset(self, request):
+        qs = super(ProyectoAdmin, self).queryset(request)
+        is_user_admin = False
+        rs = request.user.groups.filter(name="ADMINISTRADOR")
+        if len(rs) > 0:
+            is_user_admin = True
+        if request.user.is_superuser or is_user_admin:
+            return qs
+        return qs.filter(miembro__usuario_id__exact=request.user.id)
 
     def monto_proyecto(self, obj):
         return "%s %.2f" % (obj.moneda, obj.presupuesto)
     monto_proyecto.admin_order_field = 'presupuesto'
     monto_proyecto.short_description = u"monto presupuesto"
-
-class ContactoAdmin(admin.ModelAdmin):
-    list_display = ('cedula', 'nombres', 'apellidos', 'telefono_celular')
-    list_display_links = ('cedula',)
-    list_per_page = settings.LIST_PER_PAGE
-    search_fields = ('nombres','apellidos')
-
-class MiembroInline(admin.TabularInline):
-    model = Miembro
-    raw_id_fields = ("usuario",)
-    extra = 0
 
 class GrupoAdmin(admin.ModelAdmin):
     list_display = ('id','descripcion','monto_proyecto','proyecto')
@@ -105,15 +110,17 @@ class GrupoAdmin(admin.ModelAdmin):
     search_fields = ('descripcion',)
     list_filter = ('proyecto__nombre',)
     list_select_related = True
-    raw_id_fields = ('contacto',)
-    inlines = (MiembroInline,)
 
     def queryset(self, request):
         qs = super(GrupoAdmin, self).queryset(request)
 
-        if request.user.is_superuser:
+        is_user_admin = False
+        rs = request.user.groups.filter(name="ADMINISTRADOR")
+        if len(rs) > 0:
+            is_user_admin = True
+        if request.user.is_superuser or is_user_admin:
             return qs
-        return qs.filter(miembro__usuario_id__exact=request.user.id)
+        return qs.filter(proyecto__miembro__usuario_id__exact=request.user.id)
 
     def monto_proyecto(self, obj):
         return "%s %.2f" % (obj.proyecto.moneda, obj.proyecto.presupuesto)
@@ -137,7 +144,6 @@ admin.site.register(Localidad, LocalidadAdmin)
 # Proyecto
 admin.site.register(Proyecto, ProyectoAdmin)
 admin.site.register(Grupo, GrupoAdmin)
-admin.site.register(Contacto, ContactoAdmin)
 # Tipos
 admin.site.register(Categoria, CategoriaAdmin)
 admin.site.register(Tipo, TipoAdmin)

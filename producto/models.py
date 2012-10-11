@@ -59,3 +59,19 @@ class Estado(models.Model):
         db_table = "estado"
         verbose_name = "estado"
         verbose_name_plural = "estados"
+
+class Contacto(models.Model):
+    cedula = models.IntegerField(u"cédula de identidad",primary_key=True)
+    nombres = models.CharField("nombres",max_length=60)
+    apellidos = models.CharField("apellidos",max_length=80)
+    telefono_celular = models.CharField("celular", max_length=15,validators=[RegexValidator("09[6789]\d{7,7}")],
+        help_text=u"introduzca el número de telefono. Ej 0981321123")
+    obra = models.ForeignKey(Obra, verbose_name=u"obra",on_delete=models.PROTECT, null=True,blank=True)
+
+    def __unicode__(self):
+        return u"[%d] %s %s" % (self.cedula, self.nombres, self.apellidos)
+
+    class Meta:
+        verbose_name = "contacto"
+        verbose_name_plural = "contactos"
+        db_table = "contacto"

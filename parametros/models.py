@@ -75,6 +75,7 @@ class Localidad(gismodels.Model):
         super(Localidad, self).save(*args, **kwargs)
 
 class Proyecto(models.Model):
+    codigo = models.CharField(u"código",max_length=10,unique=True)
     nombre = models.CharField(u"nombre de programa", max_length=30)
     descripcion = models.TextField(u"descripción",null=True,max_length=200,help_text="Resumen descriptivo del proyecto")
     presupuesto = models.DecimalField(u"presupuesto previsto",max_digits=15,decimal_places=2,default=0)
@@ -89,27 +90,11 @@ class Proyecto(models.Model):
         verbose_name_plural = u"proyectos de inversión"
         db_table = "proyecto"
 
-class Contacto(models.Model):
-    cedula = models.IntegerField(u"cédula de identidad",primary_key=True)
-    nombres = models.CharField("nombres",max_length=60)
-    apellidos = models.CharField("apellidos",max_length=80)
-    telefono_celular = models.CharField("celular", max_length=15,validators=[RegexValidator("09[6789]\d{7,7}")],
-        help_text=u"introduzca el número de telefono. Ej 0981321123")
-
-    def __unicode__(self):
-        return u"[%d] %s %s" % (self.cedula, self.nombres, self.apellidos)
-
-    class Meta:
-        verbose_name = "contacto"
-        verbose_name_plural = "contactos"
-        db_table = "contacto"
-
 class Grupo(models.Model):
-    codigo = models.CharField(u"código",max_length=30,null=True,blank=True)
+    codigo = models.CharField(u"código",max_length=30,unique=True)
     descripcion = models.TextField(u"descripción",max_length=200,help_text="Resumen descriptivo del grupo")
     llamado = models.IntegerField("identificador de llamado",null=True,blank=True)
     proyecto = models.ForeignKey(Proyecto, verbose_name=u"proyecto de inversión",on_delete=models.PROTECT)
-    contacto = models.ForeignKey(Contacto, verbose_name=u"contacto",on_delete=models.PROTECT, null=True,blank=True)
 
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.descripcion)
@@ -121,18 +106,18 @@ class Grupo(models.Model):
         ordering = ('id',)
 
 class Miembro(models.Model):
-    grupo = models.ForeignKey(Grupo,verbose_name=u"grupo de obras",on_delete=models.PROTECT)
+    proyecto = models.ForeignKey(Proyecto,verbose_name=u"proyecto",on_delete=models.PROTECT)
     usuario = models.ForeignKey(Usuario, verbose_name=u"miembro",on_delete=models.PROTECT)
-    responsable = models.BooleanField(u"responsable del grupo",default=False)
+    responsable = models.BooleanField(u"responsable del proyecto",default=False)
 
     def __unicode__(self):
-        return u"Relación miembro (%d, %d)" % (self.grupo_id, self.usuario_id)
+        return u"Relación miembro (%d, %d)" % (self.proyecto_id, self.usuario_id)
 
     class Meta:
         verbose_name = u"miembro"
         verbose_name_plural = u"miembros"
         db_table = "miembro"
-        unique_together = ('grupo', 'usuario')
+        unique_together = ('proyecto', 'usuario')
 
 class Categoria(models.Model):
     codigo = models.CharField(u"código",max_length=3,primary_key=True)
