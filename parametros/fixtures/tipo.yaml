@@ -1,4 +1,10 @@
 - model: parametros.Tipo
+  pk: 0
+  fields:
+    etiqueta: No definido
+    orden: 0
+    categoria: PRD
+- model: parametros.Tipo
   pk: 1
   fields:
     etiqueta: Conformada
@@ -37,13 +43,13 @@
 - model: parametros.Tipo
   pk: 8
   fields:
-    etiqueta: Comisión
+    etiqueta: Comisión de Saneamiento
     orden: 1
     categoria: ORG
 - model: parametros.Tipo
   pk: 9
   fields:
-    etiqueta: Junta
+    etiqueta: Junta de Saneamiento
     orden: 2
     categoria: ORG
 - model: parametros.Tipo

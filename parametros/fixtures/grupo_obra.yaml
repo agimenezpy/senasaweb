@@ -1,155 +1,222 @@
 - model: parametros.Grupo
   pk: 1
   fields:
-    descripcion: 10 nuevos sistemas de abast. de agua para comunidades Indígenas
+    codigo: BID01
+    descripcion: 10 Sistemas de Agua y Saneamiento en comunidades Indígenas.
     proyecto: 1
 - model: parametros.Grupo
   pk: 2
   fields:
-    descripcion: 1868 Soluciones Sanitarias Mejoradas complementarias para comunidades rurales
+    codigo: BID02
+    descripcion: 1868 Soluciones Sanitarias Mejoradas
     proyecto: 1
 - model: parametros.Grupo
   pk: 3
   fields:
-    descripcion: 50 nuevos sistemas de abast. de agua potable para comunidades rurales
+    codigo: BID03
+    descripcion: 302 Letrinas en ejecución
     proyecto: 1
 - model: parametros.Grupo
   pk: 4
   fields:
-    descripcion: 71 nuevos sistemas de abast. de agua potable para comunidades rurales
+    codigo: BID04
+    descripcion: 4431  Soluciones Sanitarias Mejoradas
     proyecto: 1
 - model: parametros.Grupo
   pk: 5
   fields:
-    descripcion: 7  sistemas de abast. de agua y saneamiento complementarios para comunidades Indígenas
+    codigo: BID05
+    descripcion: 52 Sistemas de Agua y Saneamiento en Comunidades Rurales.
     proyecto: 1
 - model: parametros.Grupo
   pk: 6
   fields:
-    descripcion: 8 nuevos sistemas de abast. de agua potable para comunidades rurales
+    codigo: BID06
+    descripcion: 5914 Soluciones Sanitarias Mejoradas
     proyecto: 1
 - model: parametros.Grupo
   pk: 7
   fields:
-    descripcion: a Definir una vez finalizados los diseños
+    codigo: BID07
+    descripcion: 71 nuevos sistemas de abast. de agua potable para comunidades rurales
     proyecto: 1
 - model: parametros.Grupo
   pk: 8
   fields:
-    descripcion: 1.900 letrinas para poblaciones indígenas
-    proyecto: 2
+    codigo: BID08
+    descripcion: 8 nuevos sistemas de abast. de agua potable para comunidades rurales
+    proyecto: 1
 - model: parametros.Grupo
   pk: 9
   fields:
-    descripcion: 30 nuevos sistemas de agua para comunidades rurales
-    proyecto: 2
+    codigo: BID09
+    descripcion: a Definir una vez finalizados los diseños
+    proyecto: 1
 - model: parametros.Grupo
   pk: 10
   fields:
-    descripcion: 30 nuevos sistemas de agua y saneamiento con letrina para poblaciones indígenas
+    codigo: BIRF01
+    descripcion: 1.900 letrinas para poblaciones indígenas
     proyecto: 2
 - model: parametros.Grupo
   pk: 11
   fields:
-    descripcion: Construcción de Unidades Sanitarias Básicas
+    codigo: BIRF02
+    descripcion: 30 nuevos sistemas de agua para comunidades rurales
     proyecto: 2
 - model: parametros.Grupo
   pk: 12
   fields:
-    descripcion: 12 nuevos sistemas de agua potable
-    proyecto: 3
+    codigo: BIRF03
+    descripcion: 30 nuevos sistemas de agua y saneamiento con letrina para poblaciones indígenas
+    proyecto: 2
 - model: parametros.Grupo
   pk: 13
   fields:
-    descripcion: 4250 unidades de soluciones sanitarias mejoradas individuales
-    proyecto: 3
+    codigo: BIRF04
+    descripcion: Construcción de Unidades Sanitarias Básicas
+    proyecto: 2
 - model: parametros.Grupo
   pk: 14
   fields:
-    descripcion: 50 nuevos sistemas de agua para asentamientos campesinos 2
+    codigo: CEPRA01
+    descripcion: 2000 Soluciones Sanitarias Mejoradas
     proyecto: 3
 - model: parametros.Grupo
   pk: 15
   fields:
-    descripcion: 6400 unid. De soluciones sanitarias mejoradas en asentamientos campesinos
+    codigo: CEPRA02
+    descripcion: 4250 unidades de soluciones sanitarias mejoradas individuales
     proyecto: 3
 - model: parametros.Grupo
   pk: 16
   fields:
-    descripcion: 74 sistemas   de agua existentes  mejorados o ampliados para asentamientos campesinos.
+    codigo: CEPRA03
+    descripcion: 50 nuevos sistemas de agua para asentamientos campesinos 2
     proyecto: 3
 - model: parametros.Grupo
   pk: 17
   fields:
-    descripcion: Mejoramiento de sistemas existenes con construccion de 1 Caseta de operaciones
+    codigo: CEPRA04
+    descripcion: 6400 Soluciones Sanitarias Mejoradas
     proyecto: 3
 - model: parametros.Grupo
   pk: 18
   fields:
-    descripcion: Mejoramiento de sistemas existentes con la construccion de 1 Tanque Elevado
+    codigo: CEPRA05
+    descripcion: 74 sistemas   de agua existentes  mejorados o ampliados para asentamientos campesinos.
     proyecto: 3
 - model: parametros.Grupo
   pk: 19
   fields:
-    descripcion: 19 nuevos sistemas de agua y saneamiento con letrinas para poblaciones indígenas
-    proyecto: 4
+    codigo: CEPRA06
+    descripcion: Construccion de 12 sistemas de abastecimiento de agua potable
+    proyecto: 3
 - model: parametros.Grupo
   pk: 20
   fields:
-    descripcion: 50 nuevos sistemas de agua potable para poblaciones rurales o urbanas rurales
-    proyecto: 4
+    codigo: CEPRA07
+    descripcion: Construccion de 3 Tanque elevados y 11 Casetas de bombeo
+    proyecto: 3
 - model: parametros.Grupo
   pk: 21
   fields:
-    descripcion: 55 nuevos sistemas de agua para comunidades rurales
-    proyecto: 4
+    codigo: CEPRA08
+    descripcion: Nuevos Pedidos
+    proyecto: 3
 - model: parametros.Grupo
   pk: 22
   fields:
-    descripcion: 63 nuevos sistemas de agua para comunidades rurales
-    proyecto: 4
+    codigo: FLOC01
+    descripcion: 10 sistemas de abastecimiento de agua y saneamiento en comunidades rurales
+    proyecto: 5
 - model: parametros.Grupo
   pk: 23
   fields:
-    descripcion: 10 sistemas de abastecimiento de agua y saneamiento en comunidades rurales
+    codigo: FLOC02
+    descripcion: 175 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
     proyecto: 5
 - model: parametros.Grupo
   pk: 24
   fields:
-    descripcion: 175 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
+    codigo: FLOC03
+    descripcion: 176 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
     proyecto: 5
 - model: parametros.Grupo
   pk: 25
   fields:
-    descripcion: 176 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
+    codigo: FLOC04
+    descripcion: 177 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
     proyecto: 5
 - model: parametros.Grupo
   pk: 26
   fields:
-    descripcion: 32 nuevos sistemas de agua y saneamiento y 1790 Soluciones Sanitarias Mejoradas para comunidades de la Región Oriental
+    codigo: FLOC05
+    descripcion: 178 diseños de sistemas de agua y saneamiento para comunidades rurales e indígenas
     proyecto: 5
 - model: parametros.Grupo
   pk: 27
   fields:
+    codigo: FLOC06
     descripcion: 3 ampliaciones de sistemas de agua para comunidades rurales
     proyecto: 5
 - model: parametros.Grupo
   pk: 28
   fields:
-    descripcion: 8 sistemas de abast. de agua para poblaciones indígenas
+    codigo: FLOC07
+    descripcion: 32 nuevos sistemas de agua  y 1790 Soluciones Sanitarias Mejoradas para comunidades de la Región Oriental
     proyecto: 5
 - model: parametros.Grupo
   pk: 29
   fields:
-    descripcion: 150 Unidades Sanitarias Básicas
-    proyecto: 6
+    codigo: FLOC08
+    descripcion: 32 nuevos sistemas de agua y 1790 Soluciones Sanitarias Mejoradas para comunidades de la Región Oriental
+    proyecto: 5
 - model: parametros.Grupo
   pk: 30
   fields:
-    descripcion: 175 Unidades Sanitarias Básicas
-    proyecto: 6
+    codigo: FLOC09
+    descripcion: 8 sistemas de abast. de agua para poblaciones indígenas
+    proyecto: 5
 - model: parametros.Grupo
   pk: 31
   fields:
+    codigo: FOCEM01
+    descripcion: 19 nuevos sistemas de agua y saneamiento con letrinas para poblaciones indígenas
+    proyecto: 4
+- model: parametros.Grupo
+  pk: 32
+  fields:
+    codigo: FOCEM02
+    descripcion: 50 nuevos sistemas de agua potable para poblaciones rurales o urbanas rurales
+    proyecto: 4
+- model: parametros.Grupo
+  pk: 33
+  fields:
+    codigo: FOCEM03
+    descripcion: 55 nuevos sistemas de agua para comunidades rurales
+    proyecto: 4
+- model: parametros.Grupo
+  pk: 34
+  fields:
+    codigo: FOCEM04
+    descripcion: 63 nuevos sistemas de agua para comunidades rurales
+    proyecto: 4
+- model: parametros.Grupo
+  pk: 35
+  fields:
+    codigo: PRES01
+    descripcion: 150 Unidades Sanitarias Básicas
+    proyecto: 6
+- model: parametros.Grupo
+  pk: 36
+  fields:
+    codigo: PRES02
+    descripcion: 175 Unidades Sanitarias Básicas
+    proyecto: 6
+- model: parametros.Grupo
+  pk: 37
+  fields:
+    codigo: PRES03
     descripcion: 300 Unidades Sanitarias Básicas
     proyecto: 6

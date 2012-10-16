@@ -1,10 +1,9 @@
 # -*- coding: iso-8859-1 -*-
 from django.contrib import admin
-from django.contrib.gis import admin as gisadmin
+from django.contrib.gis.geos import Point
 from django.conf import settings
 from producto.models import *
 from parametros.admin import BaseGeoModelAdmin
-from parametros.models import *
 
 class EstadoInline(admin.TabularInline):
     model = Estado
@@ -19,7 +18,7 @@ class ObraAdmin(BaseGeoModelAdmin):
     list_select_related = True
     inlines = (EstadoInline,)
     readonly_fields = ('propietario',)
-    raw_id_fields = ('localidad','grupo')
+    raw_id_fields = ('distrito','localidad','grupo')
 
     fieldsets = (
         (None, {
@@ -32,7 +31,7 @@ class ObraAdmin(BaseGeoModelAdmin):
             'fields' : ('grupo','organizacion','junta')
         }),
         (u"Ubicación", {
-            'fields' : ('localidad','coordenada_x','coordenada_y','ubicacion')
+            'fields' : ('distrito','localidad','coordenada_x','coordenada_y','ubicacion')
         })
     )
 
@@ -53,10 +52,16 @@ class ObraAdmin(BaseGeoModelAdmin):
     def save_model(self, request, obj, form, change):
         if getattr(obj, 'propietario', None) is None:
             obj.propietario = request.user
-        if obj.coordenada_x == 0 or obj.coordenada_y == 0:
-            ubc = obj.localidad.geom.centroid
+        if obj.coordenada_x == 0 and obj.coordenada_y == 0:
+            ubc = obj.localidad.geom.centroid if obj.localidad is not None else obj.distrito.geom.centroid
             obj.coordenada_x, obj.coordenada_y = ubc.x,ubc.y
             obj.ubicacion = ubc
+        else:
+            pt = Point(obj.coordenada_x, obj.coordenada_y)
+            if obj.distrito.geom.contains(pt):
+                obj.ubicacion = pt
+            else:
+                obj.coordenada_x,obj.coordenada_y = 0,0
         obj.salva = request.user
         obj.save()
 

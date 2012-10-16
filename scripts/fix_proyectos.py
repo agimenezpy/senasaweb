@@ -1,4 +1,5 @@
 from os import path
+from csv import reader
 MODULE = "parametros"
 # -*- coding: iso-8859-1 -*-
 
@@ -12,44 +13,45 @@ PROYECTOS = {
 }
 
 if __name__ == '__main__':
-    LIST = open("scripts/proyectos_grupos.txt", "r")
-    PRO = open("%s/fixtures/proyectos.yaml" % MODULE, "w")
+    LIST = open("scripts/grupos.txt", "r")
+    #PRO = open("%s/fixtures/proyectos.yaml" % MODULE, "w")
     GRU = open("%s/fixtures/grupo_obra.yaml" % MODULE, "w")
     proj = []
     proy_id = 0
     group_id = 1
-    try:
-        while True:
-            arr = LIST.readline().strip().split("\t")
-            print arr
-            proyecto, grupo = arr[:2]
-            proyecto = proyecto.strip()
-            grupo = grupo.strip()
-            if not proyecto in proj:
-                proy_id += 1
-                proj.append(proyecto)
-            GRU.write("""- model: %s.Grupo
+    LIST.next()
+    rd = reader(LIST,'excel-tab')
+    for arr in rd:
+        print arr
+        codigo, grupo, proyecto = arr[:3]
+        proyecto = proyecto.strip()
+        grupo = grupo.strip()
+        codigo.strip()
+#            if not proyecto in proj:
+#                proy_id += 1
+#                proj.append(proyecto)
+        GRU.write("""- model: %s.Grupo
   pk: %d
   fields:
+    codigo: %s
     descripcion: %s
     proyecto: %d
 """ % (MODULE, group_id,
+       codigo,
        grupo.decode("latin-1").encode("UTF-8"),
-       proy_id))
-            group_id += 1
-    except Exception, e:
-        print e
-    proy_id = 1
-    for pr in proj:
-        PRO.write("""- model: %s.Proyecto
-  pk: %d
-  fields:
-    nombre: %s
-    descripcion: %s
-    presupuesto: 0
-    ejecutado: 0
-    moneda: USD
-""" % (MODULE, proy_id, pr, PROYECTOS[pr].decode("latin-1").encode("UTF-8")))
-        proy_id += 1
-    PRO.close()
+       int(proyecto,10)))
+        group_id += 1
+#    proy_id = 1
+#    for pr in proj:
+#        PRO.write("""- model: %s.Proyecto
+#  pk: %d
+#  fields:
+#    nombre: %s
+#    descripcion: %s
+#    presupuesto: 0
+#    ejecutado: 0
+#    moneda: USD
+#""" % (MODULE, proy_id, pr, PROYECTOS[pr].decode("latin-1").encode("UTF-8")))
+#        proy_id += 1
+#    PRO.close()
     GRU.close()

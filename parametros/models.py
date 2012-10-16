@@ -99,6 +99,13 @@ class Grupo(models.Model):
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.descripcion)
 
+    def save(self, *args, **kwargs):
+        if self.codigo == None:
+            self.codigo = "%s%02d" % (self.proyecto.codigo,
+                                      self.objects.filter(proyecto_id__exact=self.proyecto_id)
+                                      .aggregate(models.Count("codigo"))["codigo_count"] + 1)
+        super(Grupo, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = u"grupo de obras"
         verbose_name_plural = u"grupos de obras"
