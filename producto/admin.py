@@ -11,7 +11,7 @@ class EstadoInline(admin.TabularInline):
     readonly_fields = ('fecha_insercion','fecha_actualizacion','autor')
 
 class ObraAdmin(BaseGeoModelAdmin):
-    list_display = ('id','localidad','inicio','fin','grupo','porcentaje','producto')
+    list_display = ('codigo','distrito','localidad','grupo','porcentaje','producto','inicio','fin')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('producto__etiqueta',)
     list_filter = ('grupo__proyecto__nombre',)
@@ -31,7 +31,7 @@ class ObraAdmin(BaseGeoModelAdmin):
             'fields' : ('grupo','organizacion','junta')
         }),
         (u"Ubicación", {
-            'fields' : ('distrito','localidad','coordenada_x','coordenada_y','ubicacion')
+            'fields' : ('distrito','localidad','direccion','coordenada_x','coordenada_y','ubicacion')
         })
     )
 
