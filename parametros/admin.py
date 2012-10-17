@@ -16,7 +16,6 @@ class DepartamentoAdmin(GeoModelAdmin):
             'fields' : ('nombre',)
         }),
         (u"Información Geográfica", {
-            'classes' : ('collapse',),
             'fields' : ('geom',)
         })
     )
@@ -33,7 +32,6 @@ class DistritoAdmin(GeoModelAdmin):
             'fields' : ('nombre','departamento')
         }),
         (u"Información Geográfica", {
-            'classes' : ('collapse',),
             'fields' : ('geom',)
         })
     )
@@ -50,7 +48,6 @@ class LocalidadAdmin(GeoModelAdmin):
             'fields' : ('nombre','distrito')
         }),
         (u"Información Geográfica", {
-            'classes' : ('collapse',),
             'fields' : ('geom',)
         })
     )
