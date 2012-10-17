@@ -1,5 +1,4 @@
 from parametros.models import *
-from producto.models import *
 from dojango.data.modelstore import *
 
 class BaseStore(Store):
@@ -14,21 +13,9 @@ class GrupoStore(Store):
     descripcion = StoreField()
     llamado = StoreField()
     proyecto = ReferenceField()
-    contacto = ReferenceField()
 
     class Meta:
         objects = Grupo.objects.all()
-        label = 'key'
-
-class ContactoStore(Store):
-    key = StoreField(get_value=ObjectMethod("__unicode__"))
-    cedula = StoreField()
-    nombres = StoreField()
-    apellidos = StoreField()
-    telefono_celular = StoreField()
-
-    class Meta:
-        objects = Contacto.objects.all()
         label = 'key'
 
 class DepartamentoStore(BaseStore):

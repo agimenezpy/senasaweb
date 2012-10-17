@@ -5,6 +5,7 @@ from django.views.decorators.cache import never_cache
 
 @never_cache
 def lookup_handler(request, model, object_id):
+    filtro = {"pk" : object_id}
     if model == "departamento":
         store = DepartamentoStore()
         model_class = Departamento
@@ -17,10 +18,8 @@ def lookup_handler(request, model, object_id):
     elif model == "grupo":
         store = GrupoStore()
         model_class = Grupo
-    elif model == "contacto":
-        store = ContactoStore()
-        model_class = Contacto
+        filtro = {"codigo":object_id}
     else:
         raise Http404("Modelo %s no existe" % model)
-    result = store.to_json(objects=model_class.objects.filter(pk=object_id))
+    result = store.to_json(objects=model_class.objects.filter(**filtro))
     return HttpResponse(result, mimetype="application/json")

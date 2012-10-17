@@ -1,28 +1,16 @@
 # -*- coding: iso-8859-1 -*-
 from django.contrib import admin
-from django.contrib.gis import admin as gisadmin
+from senasaweb.admin import MyGeoModelAdmin as GeoModelAdmin,MyModelAdmin as ModelAdmin
 from models import *
 from django.conf import settings
 from dojango.forms.widgets import SimpleTextarea,NumberTextInput
 
-class BaseGeoModelAdmin(gisadmin.GeoModelAdmin):
-    max_extent =  '-81414.425199, 6950131.660985, 778278.875001, 7864759.500000'
-    map_srid = 32721
-    wms_url = settings.WMS_SERVICE
-    wms_layer = 'default'
-    wms_name = 'Senasa WMS'
-    units = 'm'
-    max_resolution = "'auto'"
-    num_zoom = 8
-    default_zoom = 0
-    default_lon = 454085
-    default_lat = 7427009
-
-class DepartamentoAdmin(BaseGeoModelAdmin):
+class DepartamentoAdmin(GeoModelAdmin):
     list_display = ('codigo','nombre')
     list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
+
     fieldsets = (
         (None, {
             'fields' : ('nombre',)
@@ -33,7 +21,7 @@ class DepartamentoAdmin(BaseGeoModelAdmin):
         })
     )
 
-class DistritoAdmin(BaseGeoModelAdmin):
+class DistritoAdmin(GeoModelAdmin):
     list_display = ('codigo','nombre','departamento')
     list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
@@ -50,7 +38,7 @@ class DistritoAdmin(BaseGeoModelAdmin):
         })
     )
 
-class LocalidadAdmin(BaseGeoModelAdmin):
+class LocalidadAdmin(GeoModelAdmin):
     list_display = ('codigo','nombre','distrito_nombre')
     list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
@@ -78,7 +66,7 @@ class MiembroInline(admin.TabularInline):
     raw_id_fields = ("usuario",)
     extra = 0
 
-class ProyectoAdmin(admin.ModelAdmin):
+class ProyectoAdmin(ModelAdmin):
     list_display = ('id','nombre','monto_proyecto')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
@@ -104,8 +92,8 @@ class ProyectoAdmin(admin.ModelAdmin):
     monto_proyecto.admin_order_field = 'presupuesto'
     monto_proyecto.short_description = u"monto presupuesto"
 
-class GrupoAdmin(admin.ModelAdmin):
-    list_display = ('id','descripcion','monto_proyecto','proyecto')
+class GrupoAdmin(ModelAdmin):
+    list_display = ('codigo','descripcion','monto_proyecto','proyecto')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('descripcion',)
     list_filter = ('proyecto__nombre',)
@@ -126,13 +114,13 @@ class GrupoAdmin(admin.ModelAdmin):
         return "%s %.2f" % (obj.proyecto.moneda, obj.proyecto.presupuesto)
     monto_proyecto.admin_order_field = 'proyecto__presupuesto'
 
-class TipoAdmin(admin.ModelAdmin):
+class TipoAdmin(ModelAdmin):
     list_display = ('id','orden','etiqueta','categoria')
     list_per_page = settings.LIST_PER_PAGE
     list_filter = ('categoria__nombre',)
     list_select_related = True
 
-class CategoriaAdmin(admin.ModelAdmin):
+class CategoriaAdmin(ModelAdmin):
     list_display = ('codigo','nombre')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('codigo',)

@@ -26,6 +26,13 @@ function handle_lookup() {
             dojo.unblock("container");
             if (data.items.length == 0) {
                 var lbl = dojo.query(".field-" + field_name + " strong").empty();
+                if (lbl.length != 0) {
+                    lbl.empty();
+                    lbl.innerHTML("Valor no econtrado");
+                }
+                else {
+                    dojo.query(".field-" + field_name + " a").after("<strong>Valor no econtrado</strong>");
+                }
                 return;
             }
             var itm = data.items[0]

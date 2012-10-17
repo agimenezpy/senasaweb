@@ -6,7 +6,7 @@ from parametros.models import *
 from datetime import datetime
 
 class Obra(gismodels.Model):
-    codigo = models.CharField("codigo",max_length=20,unique=True)
+    codigo = models.CharField("codigo",max_length=20,unique=True,editable=False)
     distrito = models.ForeignKey(Distrito, verbose_name="distrito",on_delete=models.PROTECT)
     localidad = models.ForeignKey(Localidad, verbose_name="localidad",on_delete=models.PROTECT,null=True,blank=True)
     direccion = models.CharField(u"ubicacion",max_length=150)
@@ -33,20 +33,21 @@ class Obra(gismodels.Model):
     objects = gismodels.GeoManager()
 
     def save(self, *args, **kwargs):
-        if self.codigo == None:
+        if self.codigo is None or len(self.codigo) == 0:
             self.codigo = "%s%03d" % (self.grupo.codigo,
-                                      self.objects.filter(grupo_id__exact=self.grupo_id)
-                                      .aggregate(models.Count("codigo"))["codigo_count"] + 1)
+                                      Obra.objects.filter(grupo_id__exact=self.grupo_id)
+                                      .aggregate(models.Count("codigo"))["codigo__count"] + 1)
         super(Obra, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return u"[%s] %s" % (self.id, self.producto.etiqueta)
+        return u"[%s] %s - %s" % (self.codigo, self.producto.etiqueta, self.grupo_id)
 
     class Meta:
         db_table = "obra"
         verbose_name = "obra de infraestructura"
         verbose_name_plural = "obras de infraestructura"
         ordering = ('id',)
+        permissions = (('view_obra','Can view obra'),)
 
 class Estado(models.Model):
     descripcion = models.TextField(u"descripción",max_length=200)
@@ -56,7 +57,7 @@ class Estado(models.Model):
     obra = models.ForeignKey(Obra, verbose_name="obra",to_field='codigo',on_delete=models.CASCADE)
 
     def __unicode__(self):
-        return u"[%s] %s" % (self.id, self.descripcion)
+        return u"[%d] %s" % (self.id, self.descripcion)
 
     def save(self, force_insert=False, force_update=False, using=None):
         self.autor = self.obra.salva
@@ -69,6 +70,7 @@ class Estado(models.Model):
         db_table = "estado"
         verbose_name = "estado"
         verbose_name_plural = "estados"
+        permissions = (('view_estado','Can view estado'),)
 
 class Contacto(models.Model):
     cedula = models.IntegerField(u"cédula de identidad",primary_key=True)
@@ -85,3 +87,4 @@ class Contacto(models.Model):
         verbose_name = "contacto"
         verbose_name_plural = "contactos"
         db_table = "contacto"
+        permissions = (('view_contacto','Can view contacto'),)

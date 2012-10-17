@@ -3,18 +3,18 @@ from django.contrib import admin
 from django.contrib.gis.geos import Point
 from django.conf import settings
 from producto.models import *
-from parametros.admin import BaseGeoModelAdmin
+from senasaweb.admin import MyGeoModelAdmin as GeoModelAdmin,MyModelAdmin as ModelAdmin
 
 class EstadoInline(admin.TabularInline):
     model = Estado
     extra = 0
     readonly_fields = ('fecha_insercion','fecha_actualizacion','autor')
 
-class ObraAdmin(BaseGeoModelAdmin):
-    list_display = ('codigo','distrito','localidad','grupo','porcentaje','producto','inicio','fin')
+class ObraAdmin(GeoModelAdmin):
+    list_display = ('codigo','distrito','localidad','grupo','progreso','producto','inicio','fin')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('producto__etiqueta',)
-    list_filter = ('grupo__proyecto__nombre',)
+    list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
     list_select_related = True
     inlines = (EstadoInline,)
     readonly_fields = ('propietario',)
@@ -34,6 +34,13 @@ class ObraAdmin(BaseGeoModelAdmin):
             'fields' : ('distrito','localidad','direccion','coordenada_x','coordenada_y','ubicacion')
         })
     )
+
+    def progreso(self,obj):
+        return '<div data-dojo-type="dijit.ProgressBar" style="width:80px" data-dojo-id="myProgressBar%d" id="progress%d" data-dojo-props="value:%d"></div>' \
+               % (obj.id,obj.id,obj.porcentaje)
+    progreso.allow_tags = True
+    progreso.ordering = 'porcentaje'
+    progreso.short_description = "Progreso"
 
     def queryset(self, request):
         qs = super(ObraAdmin, self).queryset(request)
@@ -65,7 +72,7 @@ class ObraAdmin(BaseGeoModelAdmin):
         obj.salva = request.user
         obj.save()
 
-class ContactoAdmin(admin.ModelAdmin):
+class ContactoAdmin(ModelAdmin):
     list_display = ('cedula', 'nombres', 'apellidos', 'telefono_celular')
     list_display_links = ('cedula',)
     list_per_page = settings.LIST_PER_PAGE
