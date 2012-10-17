@@ -54,7 +54,7 @@ class ObraAdmin(GeoModelAdmin):
         rs = request.user.groups.filter(name="LIDER DE PROYECTO")
         if len(rs) > 0:
             return qs.filter(grupo__proyecto__miembro__usuario_id__exact=request.user.id)
-        return qs.filter(grupo__miembro__usuario_id__exact=request.user.id)
+        return qs.filter(propietario_id__exact=request.user.id)
 
     def save_model(self, request, obj, form, change):
         if getattr(obj, 'propietario', None) is None:
