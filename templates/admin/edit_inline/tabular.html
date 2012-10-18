@@ -49,7 +49,11 @@
                   <p>{{ field.contents }}</p>
               {% else %}
                   {{ field.field.errors.as_ul }}
-                  {{ field.field }}
+                  {% if line.form.instance.autor_id != user.id and line.form.instance.autor_id != None %}
+                    {{ field.field|get_w }}
+                  {% else %}
+                    {{ field.field }}
+                  {% endif %}
               {% endif %}
               </td>
             {% endfor %}

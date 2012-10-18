@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib.gis.geos import Point
 from django.conf import settings
 from producto.models import *
+from producto.forms import ObraForm
 from senasaweb.admin import MyGeoModelAdmin as GeoModelAdmin,MyModelAdmin as ModelAdmin
 
 class EstadoInline(admin.TabularInline):
@@ -19,6 +20,7 @@ class ObraAdmin(GeoModelAdmin):
     inlines = (EstadoInline,)
     readonly_fields = ('propietario',)
     raw_id_fields = ('distrito','localidad','grupo')
+    form = ObraForm
 
     fieldsets = (
         (None, {
@@ -61,14 +63,10 @@ class ObraAdmin(GeoModelAdmin):
             obj.propietario = request.user
         if obj.coordenada_x == 0 and obj.coordenada_y == 0:
             ubc = obj.localidad.geom.centroid if obj.localidad is not None else obj.distrito.geom.centroid
-            obj.coordenada_x, obj.coordenada_y = ubc.x,ubc.y
             obj.ubicacion = ubc
-        else:
-            pt = Point(obj.coordenada_x, obj.coordenada_y)
-            if obj.distrito.geom.contains(pt):
-                obj.ubicacion = pt
-            else:
-                obj.coordenada_x,obj.coordenada_y = 0,0
+        elif not obj.ubicacion:
+            pt = Point(obj.coordenada_x, obj.coordenada_y,srid=32721)
+            obj.ubicacion = pt
         obj.salva = request.user
         obj.save()
 
