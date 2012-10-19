@@ -20,7 +20,7 @@ function handle_lookup() {
         return;
     dojo.block("container");
     dojo.xhr.get({
-        url: "/lookup/" + field_name + "/" + value,
+        url: window.__prefix__ + "/lookup/" + field_name + "/" + value,
         handleAs: "json",
         load: function(data, ioArgs) {
             dojo.unblock("container");

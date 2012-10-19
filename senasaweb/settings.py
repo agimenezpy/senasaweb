@@ -170,15 +170,20 @@ if os.name == "nt":
     GDAL_LIBRARY_PATH = "C:/OSGeo4W/gdalwin32-1.6/bin/gdal16.dll"
     DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.spatialite'
     DATABASES['default']['NAME'] = os.path.join(ROOT_DIR,'senasaweb.sqlite')
+    WMS_SERVICE = "http://www.senasa.gov.py/gisobras/wms"
+    CONTEXT = ""
 else:
     SESSION_ENGINE = "django.contrib.sessions.backends.file"
+    DEBUG = False
+    TEMPLATE_DEBUG = DEBUG
+    CONTEXT = "/gisobras"
+    WMS_SERVICE = CONTEXT + "/wms"
 
 # DOJANGO
 DOJANGO_DOJO_PROFILE = "local_release"
 DOJANGO_DOJO_VERSION = "1.7.3"
 DOJANGO_DOJO_THEME = "claro"
-DOJANGO_BASE_MEDIA_URL = 'dojo-media'
-DOJANGO_BASE_MEDIA_URL = "/static/" + DOJANGO_BASE_MEDIA_URL
-
-WMS_SERVICE = "http://www.senasa.gov.py/senasaweb/wms"
+DOJANGO_DOJO_MEDIA_URL = 'dojo-media'
+STATIC_URL = CONTEXT + STATIC_URL
+DOJANGO_BASE_MEDIA_URL = STATIC_URL + DOJANGO_DOJO_MEDIA_URL
 

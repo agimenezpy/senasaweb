@@ -1,5 +1,5 @@
 {% extends "dojango/base_i18n.html" %}
-{% load admin_static %}{% load url from future %}
+{% load admin_static navigation %}{% load url from future %}
 
 {% block dojango_page_title %} {% block title %}{% endblock %} {% endblock %}
 {% block dojango_header_extra %}
@@ -8,11 +8,12 @@
 <link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}" />
 
 <script type="text/javascript" src="{% static "js/block.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/field_lookup.js" %}"></script>
+<script type="text/javascript" src="{% static "js/field_lookup.js" %}"></script>
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
 <script type="text/javascript">
     window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";
+    window.__prefix__ = "{% context %}";
     dojo.ready(function(){
         dojo.fadeOut({
             node: dojo.byId('loadingOverlay'),

@@ -4,6 +4,7 @@ from django.contrib.gis.db import models as gismodels
 from django.contrib.auth.models import User
 from parametros.models import *
 from datetime import datetime
+from django.core.validators import RegexValidator
 
 class Obra(gismodels.Model):
     codigo = models.CharField("codigo",max_length=20,unique=True,editable=False)
@@ -76,8 +77,8 @@ class Contacto(models.Model):
     cedula = models.IntegerField(u"cédula de identidad",primary_key=True)
     nombres = models.CharField("nombres",max_length=60)
     apellidos = models.CharField("apellidos",max_length=80)
-    telefono_celular = models.CharField("celular", max_length=15,validators=[RegexValidator("09[6789]\d{7,7}")],
-        help_text=u"introduzca el número de telefono. Ej 0981321123")
+    telefono_celular = models.CharField("celular", max_length=15,validators=[RegexValidator("^09[6789]\d{7,7}$")],
+        help_text=u"Introduzca el número de telefono. Ej 0981321123")
     obra = models.ForeignKey(Obra, verbose_name=u"obra",to_field='codigo',on_delete=models.SET_DEFAULT, null=True,blank=True,default=None)
 
     def __unicode__(self):

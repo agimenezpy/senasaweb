@@ -2,7 +2,6 @@
 from django.db import models
 from django.contrib.gis.db import models as gismodels
 from django.contrib.auth.models import User as Usuario
-from django.core.validators import RegexValidator
 
 class Departamento(gismodels.Model):
     codigo = models.IntegerField(u"código",primary_key=True)

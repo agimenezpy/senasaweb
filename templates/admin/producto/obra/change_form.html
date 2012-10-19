@@ -54,18 +54,25 @@
 {% endif %}
 <div data-dojo-type="dijit.layout.TabContainer" data-dojo-props="tabPosition: 'top',region:'center'">
 {% block field_sets %}
-{% for fieldset in adminform %}
-  <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '{% if fieldset.name %}{{ fieldset.name }} {% else %} Datos Principales  {% endif %}'">
-  {% include "admin/includes/fieldset.html" %}
-  </div>
-{% endfor %}
+<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'Datos Principales'">
+  {% for fieldset in adminform %}
+    {% ifnotequal fieldset.classes 'tab' %}
+      {% include "admin/includes/fieldset.html" %}
+    {% else %}
+</div>
+<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '{{ fieldset.name }}'">
+      {% include "admin/includes/fieldset.html" %}
+    {% endifnotequal %}
+  {% endfor %}
+</div>
+
 {% endblock %}
 
 {% block after_field_sets %}{% endblock %}
 
 {% block inline_field_sets %}
 {% for inline_admin_formset in inline_admin_formsets %}
-    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}'">
+    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}'" class='tab'>
     {% include inline_admin_formset.opts.template %}
     </div>
 {% endfor %}
@@ -74,7 +81,11 @@
 <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'bottom'">
 {% block after_related_objects %}{% endblock %}
 
-{% block submit_buttons_bottom %}{% submit_row %}{% endblock %}
+{% block submit_buttons_bottom %}
+    {% if has_change_permission %}
+        {% submit_row %}
+    {% endif %}
+{% endblock %}
 </div>
 {% if adminform and add %}
    <script type="text/javascript">document.getElementById("{{ adminform.first_field.id_for_label }}").focus();</script>

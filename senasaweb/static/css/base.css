@@ -34,7 +34,7 @@ ul {padding: 0px;}
 .dojoBlockOverlay {background: #fff url(../img/loading.gif) no-repeat center center;}
 .calendarbox {z-index: 3}
 .colMTab { padding: 0px; height:100% }
-.colMTab h2 {display: none}
+.colMTab .tab h2 {display: none}
 .colMTab .module {border: none;}
 .colMTab .dijitContentPane {
     padding: 0px;

@@ -12,7 +12,7 @@ class EstadoInline(admin.TabularInline):
     readonly_fields = ('fecha_insercion','fecha_actualizacion','autor')
 
 class ObraAdmin(GeoModelAdmin):
-    list_display = ('codigo','distrito','localidad','grupo','progreso','producto','inicio','fin')
+    list_display = ('codigo','distrito','localidad','producto','grupo','proceso','progreso','fecha_inicio','fecha_fin')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('producto__etiqueta',)
     list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
@@ -24,15 +24,16 @@ class ObraAdmin(GeoModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields' : ('inicio','fin','producto','cantidad','poblacion','tipo_poblacion')
+            'fields' : ('grupo','producto','cantidad','poblacion','tipo_poblacion','propietario')
         }),
         (u"Seguimiento", {
-            'fields' : ('proceso','porcentaje','propietario')
+            'fields' : ('inicio','fin','proceso','porcentaje')
         }),
-        (u"Grupo de Trabajo", {
-            'fields' : ('grupo','organizacion','junta')
+        (u"Junta de Saneamiento", {
+            'fields' : ('organizacion','junta')
         }),
         (u"Ubicación", {
+            'classes' : ('tab',),
             'fields' : ('distrito','localidad','direccion','coordenada_x','coordenada_y','ubicacion')
         })
     )
@@ -41,8 +42,18 @@ class ObraAdmin(GeoModelAdmin):
         return '<div data-dojo-type="dijit.ProgressBar" style="width:80px" data-dojo-id="myProgressBar%d" id="progress%d" data-dojo-props="value:%d"></div>' \
                % (obj.id,obj.id,obj.porcentaje)
     progreso.allow_tags = True
-    progreso.ordering = 'porcentaje'
+    progreso.admin_order_field = 'porcentaje'
     progreso.short_description = "Progreso"
+
+    def fecha_inicio(self, obj):
+        return obj.inicio.strftime("%d/%m/%Y")
+    fecha_inicio.short_description = "Inicio"
+    fecha_inicio.admin_order_field = 'inicio'
+
+    def fecha_fin(self, obj):
+        return obj.fin.strftime("%d/%m/%Y")
+    fecha_fin.short_description = "Fin"
+    fecha_fin.admin_order_field = 'fin'
 
     def queryset(self, request):
         qs = super(ObraAdmin, self).queryset(request)
@@ -71,7 +82,7 @@ class ObraAdmin(GeoModelAdmin):
         obj.save()
 
 class ContactoAdmin(ModelAdmin):
-    list_display = ('cedula', 'nombres', 'apellidos', 'telefono_celular')
+    list_display = ('obra','cedula', 'nombres', 'apellidos', 'telefono_celular')
     list_display_links = ('cedula',)
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombres','apellidos')
