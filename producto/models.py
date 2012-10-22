@@ -9,8 +9,8 @@ from django.core.validators import RegexValidator
 class Obra(gismodels.Model):
     codigo = models.CharField("codigo",max_length=20,unique=True,editable=False)
     distrito = models.ForeignKey(Distrito, verbose_name="distrito",on_delete=models.PROTECT)
-    localidad = models.ForeignKey(Localidad, verbose_name="localidad",on_delete=models.PROTECT,null=True,blank=True)
-    direccion = models.CharField(u"ubicacion",max_length=150)
+    localidad = models.ForeignKey(Localidad, verbose_name="barrio o locacion",on_delete=models.PROTECT,null=True,blank=True)
+    direccion = models.CharField(u"localidad",max_length=150)
     inicio = models.DateField("inicio de actividades")
     fin = models.DateField("fin de las actividades")
     proceso = models.ForeignKey(Tipo, verbose_name="proceso",related_name="+",
