@@ -103,7 +103,7 @@ class ObraAdmin(GeoModelAdmin):
         return urlpatterns
 
     def export(self, request, extra_context=None):
-        return export_obras_pdf(self,request,None)
+        return export_obras_xls(self,request,None)
 
 class ContactoAdmin(ModelAdmin):
     list_display = ('obra','cedula', 'nombres', 'apellidos', 'telefono_celular')

@@ -192,3 +192,5 @@ ADMIN_REORDER = (
     ("Parametros", ("Departamentos","Distritos","Localidades",u"Proyectos de inversión","Grupos de obras")),
     ("Auth", ("Usuarios", "Grupos"))
 )
+
+DOWNLOAD_DIR = os.path.join(STATIC_ROOT,"descargas")

@@ -141,7 +141,7 @@ def save_xls(modeladmin,request,queryset,fields,sql,params):
 
     now = datetime.now()
     filename = "%s_%s.xls" % (unicode(opts).replace(".","_"),now.strftime("%d-%m-%Y_%H%M%S"))
-    wb.save(os.path.join(settings.STATIC_ROOT,filename))
+    wb.save(os.path.join(settings.DOWNLOAD_DIR,filename))
     return {'filename':filename,'type':'xls'}
 
 def save_pdf(modeladmin,request,queryset,fields,sql,params):
@@ -165,7 +165,8 @@ def save_pdf(modeladmin,request,queryset,fields,sql,params):
             rwData.append(valor)
         if lastDpto != rwData[0]:
             if lastDpto != "":
-                elements.append(PageBreak())
+                if lastDpto != fistDpto:
+                    elements.append(PageBreak())
                 elements.append(Caratula(lastDpto,settings.CONFIG_DIR))
                 elements.append(PageBreak())
                 elements.append(Tabla(data,rows,len(fields)))
@@ -183,7 +184,7 @@ def save_pdf(modeladmin,request,queryset,fields,sql,params):
     elements.append(Tabla(data,rows,len(fields)))
     now = datetime.now()
     filename = "%s_%s.pdf" % (unicode(opts).replace(".","_"),now.strftime("%d-%m-%Y_%H%M%S"))
-    doc = SimpleDocTemplate(os.path.join(settings.STATIC_ROOT,filename),pagesize=(PAGE_HEIGHT,PAGE_WIDTH))
+    doc = SimpleDocTemplate(os.path.join(settings.DOWNLOAD_DIR,filename),pagesize=(PAGE_HEIGHT,PAGE_WIDTH))
     doc.build(elements,canvasmaker=NumberedCanvas)
     return {'filename':filename,'type':'pdf'}
 
