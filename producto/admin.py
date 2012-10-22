@@ -5,6 +5,8 @@ from django.conf import settings
 from producto.models import *
 from producto.forms import ObraForm
 from senasaweb.admin import MyGeoModelAdmin as GeoModelAdmin,MyModelAdmin as ModelAdmin
+from producto.exporter import export_obras_xls,export_obras_pdf
+from functools import update_wrapper
 
 class EstadoInline(admin.TabularInline):
     model = Estado
@@ -21,6 +23,7 @@ class ObraAdmin(GeoModelAdmin):
     readonly_fields = ('propietario',)
     raw_id_fields = ('distrito','localidad','grupo')
     form = ObraForm
+    actions = [export_obras_xls,export_obras_pdf]
 
     fieldsets = (
         (None, {
@@ -80,6 +83,27 @@ class ObraAdmin(GeoModelAdmin):
             obj.ubicacion = pt
         obj.salva = request.user
         obj.save()
+
+    def get_urls(self):
+        urlpatterns = super(ObraAdmin,self).get_urls()
+        from django.conf.urls import patterns, url
+
+        def wrap(view):
+            def wrapper(*args, **kwargs):
+                return self.admin_site.admin_view(view)(*args, **kwargs)
+            return update_wrapper(wrapper, view)
+
+        info = self.model._meta.app_label, self.model._meta.module_name
+
+        urlpatterns = patterns('',
+            url(r'^export/$',
+                wrap(self.export),
+                name='%s_%s_export' % info),
+        ) + urlpatterns
+        return urlpatterns
+
+    def export(self, request, extra_context=None):
+        return export_obras_pdf(self,request,None)
 
 class ContactoAdmin(ModelAdmin):
     list_display = ('obra','cedula', 'nombres', 'apellidos', 'telefono_celular')

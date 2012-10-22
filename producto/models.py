@@ -45,8 +45,8 @@ class Obra(gismodels.Model):
 
     class Meta:
         db_table = "obra"
-        verbose_name = "obra de infraestructura"
-        verbose_name_plural = "obras de infraestructura"
+        verbose_name = "obra"
+        verbose_name_plural = "obras"
         ordering = ('id',)
         permissions = (('view_obra','Can view obra'),)
 
@@ -79,6 +79,7 @@ class Contacto(models.Model):
     apellidos = models.CharField("apellidos",max_length=80)
     telefono_celular = models.CharField("celular", max_length=15,validators=[RegexValidator("^09[6789]\d{7,7}$")],
         help_text=u"Introduzca el número de telefono. Ej 0981321123")
+    comentario = models.TextField("comentarios",max_length=200,null=True,blank=True)
     obra = models.ForeignKey(Obra, verbose_name=u"obra",to_field='codigo',on_delete=models.SET_DEFAULT, null=True,blank=True,default=None)
 
     def __unicode__(self):

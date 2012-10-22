@@ -64,10 +64,3 @@ function handle_lookup() {
         }
     })
 }
-
-var last_func = dismissRelatedLookupPopup;
-function dismissRelatedLookupPopup(win, choosenId) {
-    var name = windowname_to_id(win.name);
-    document.getElementById(name).focus();
-    last_func(win, choosenId);
-}

@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib.gis import admin as gisadmin
 from dojango.util import dojo_collector
 from django.conf import settings
-from functools import update_wrapper
 
 class MyGeoModelAdmin(gisadmin.GeoModelAdmin):
     max_extent =  '-81414.425199, 6950131.660985, 778278.875001, 7864759.500000'
@@ -111,5 +110,5 @@ class MyAdminSite(admin.AdminSite):
 
 site = MyAdminSite()
 admin.site = site
-
+admin.site.disable_action('delete_selected')
 admin.autodiscover()

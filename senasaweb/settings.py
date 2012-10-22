@@ -1,4 +1,4 @@
-# Django settings for senasaweb project.
+# -*- coding: iso-8859-1 -*-
 import os
 CONFIG_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.dirname(CONFIG_DIR)
@@ -187,3 +187,8 @@ DOJANGO_DOJO_MEDIA_URL = 'dojo-media'
 STATIC_URL = CONTEXT + STATIC_URL
 DOJANGO_BASE_MEDIA_URL = STATIC_URL + DOJANGO_DOJO_MEDIA_URL
 
+ADMIN_REORDER = (
+    ("Producto", ("Obras", "Contactos")),
+    ("Parametros", ("Departamentos","Distritos","Localidades",u"Proyectos de inversión","Grupos de obras")),
+    ("Auth", ("Usuarios", "Grupos"))
+)
