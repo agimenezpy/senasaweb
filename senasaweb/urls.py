@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'senasaweb.views.home', name='home'),
     # url(r'^senasaweb/', include('senasaweb.foo.urls')),
-    url(r'^', include(admin.site.urls)),
+    url(r'^admin/', include(admin.site.urls)),
     (r'^lookup/(?P<model>\w+)/(?P<object_id>\w+)$', 'parametros.views.lookup_handler'),
     #(r'^dojango/', include('dojango.urls')),
 )

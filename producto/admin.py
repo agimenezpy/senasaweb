@@ -7,6 +7,8 @@ from producto.forms import ObraForm
 from senasaweb.admin import MyGeoModelAdmin as GeoModelAdmin,MyModelAdmin as ModelAdmin
 from producto.exporter import export_obras_xls,export_obras_pdf
 from functools import update_wrapper
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 
 class EstadoInline(admin.TabularInline):
     model = Estado
@@ -14,16 +16,22 @@ class EstadoInline(admin.TabularInline):
     readonly_fields = ('fecha_insercion','fecha_actualizacion','autor')
 
 class ObraAdmin(GeoModelAdmin):
-    list_display = ('codigo','distrito','localidad','producto','grupo','proceso','progreso','fecha_inicio','fecha_fin')
+    list_display = ('codigo','distrito','direccion','proceso','porcentaje','inicio','fin','producto','grupo')
     list_per_page = settings.LIST_PER_PAGE
-    search_fields = ('producto__etiqueta',)
+    list_max_show_all = settings.LIST_PER_PAGE
+    list_editable = ('proceso','porcentaje','inicio','fin')
+    search_fields = ('producto__etiqueta','codigo')
     list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
     list_select_related = True
     inlines = (EstadoInline,)
     readonly_fields = ('propietario',)
     raw_id_fields = ('distrito','localidad','grupo')
     form = ObraForm
-    actions = [export_obras_xls,export_obras_pdf]
+
+    def __init__(self,model,admin_site):
+        super(ObraAdmin, self).__init__(model,admin_site)
+        self.listAdmin = ObraListAdmin(model,admin_site)
+        self.listAdmin.view = True
 
     fieldsets = (
         (None, {
@@ -40,23 +48,6 @@ class ObraAdmin(GeoModelAdmin):
             'fields' : ('distrito','localidad','direccion','coordenada_x','coordenada_y','ubicacion')
         })
     )
-
-    def progreso(self,obj):
-        return '<div data-dojo-type="dijit.ProgressBar" style="width:80px" data-dojo-id="myProgressBar%d" id="progress%d" data-dojo-props="value:%d"></div>' \
-               % (obj.id,obj.id,obj.porcentaje)
-    progreso.allow_tags = True
-    progreso.admin_order_field = 'porcentaje'
-    progreso.short_description = "Progreso"
-
-    def fecha_inicio(self, obj):
-        return obj.inicio.strftime("%d/%m/%Y")
-    fecha_inicio.short_description = "Inicio"
-    fecha_inicio.admin_order_field = 'inicio'
-
-    def fecha_fin(self, obj):
-        return obj.fin.strftime("%d/%m/%Y")
-    fecha_fin.short_description = "Fin"
-    fecha_fin.admin_order_field = 'fin'
 
     def queryset(self, request):
         qs = super(ObraAdmin, self).queryset(request)
@@ -96,11 +87,65 @@ class ObraAdmin(GeoModelAdmin):
         info = self.model._meta.app_label, self.model._meta.module_name
 
         urlpatterns = patterns('',
+            url(r'^list/$',
+                wrap(self.listAdmin.changelist_view),
+                name='%s_%s_changelist_ro' % info),
             url(r'^export/$',
-                wrap(self.export),
+                wrap(self.listAdmin.export),
                 name='%s_%s_export' % info),
+            url(r'^list/(.+)/$',
+                wrap(self.list_view),
+                name='%s_%s_change_ro' % info),
         ) + urlpatterns
         return urlpatterns
+
+    def list_view(self, request, object_id, form_url='', extra_context=None):
+        opts = self.model._meta
+        return HttpResponseRedirect(reverse('admin:%s_%s_change' %
+                                            (opts.app_label, opts.module_name), args=(object_id,),
+            current_app=self.admin_site.name))
+
+    def has_change_permission(self, request, obj=None):
+        # Esto se implementa asi porque siempre desde el changelist_view se envia obj=None pero en otra invocacion no
+        if obj is None or self.view:
+            return self.has_view_permission(request,obj)
+        else:
+            chPerm = super(ObraAdmin,self).has_change_permission(request,obj)
+            if chPerm and obj != False and not request.user.is_superuser:
+                objPerm = False
+                try:
+                    otobj = Obra.objects.get(pk=obj.id,grupo__proyecto__miembro__usuario_id__exact=request.user.id)
+                    objPerm = True
+                except:
+                    pass
+                return  objPerm
+            else:
+                return chPerm
+
+class ObraListAdmin(ModelAdmin):
+    list_display = ('codigo','distrito','direccion','proceso','progreso','fecha_inicio','fecha_fin','producto','grupo')
+    list_per_page = settings.LIST_PER_PAGE
+    search_fields = ('producto__etiqueta','codigo')
+    list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
+    list_select_related = True
+    actions = [export_obras_xls,export_obras_pdf]
+
+    def progreso(self,obj):
+        return '<div data-dojo-type="dijit.ProgressBar" style="width:80px" data-dojo-id="myProgressBar%d" id="progress%d" data-dojo-props="value:%d"></div>' \
+               % (obj.id,obj.id,obj.porcentaje)
+    progreso.allow_tags = True
+    progreso.admin_order_field = 'porcentaje'
+    progreso.short_description = "Progreso"
+
+    def fecha_inicio(self, obj):
+        return obj.inicio.strftime("%d/%m/%Y")
+    fecha_inicio.short_description = "Inicio"
+    fecha_inicio.admin_order_field = 'inicio'
+
+    def fecha_fin(self, obj):
+        return obj.fin.strftime("%d/%m/%Y")
+    fecha_fin.short_description = "Fin"
+    fecha_fin.admin_order_field = 'fin'
 
     def export(self, request, extra_context=None):
         return export_obras_xls(self,request,None)

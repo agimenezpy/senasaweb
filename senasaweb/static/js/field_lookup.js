@@ -37,10 +37,13 @@ function handle_lookup() {
             }
             var itm = data.items[0]
             if (map && field_name.match("localidad|departamento|distrito")) {
-                map.zoomToExtent(new OpenLayers.Bounds(itm.extension[0],
+                //prj = new OpenLayers.Projection("EPSG:32721");
+                bb = new OpenLayers.Bounds(itm.extension[0],
                     itm.extension[1],
                     itm.extension[2],
-                    itm.extension[3]));
+                    itm.extension[3]);
+                //bb.transform(prj,map.getProjectionObject());
+                map.zoomToExtent(bb);
             }
             var lbl = dojo.query(".field-" + field_name + " strong");
             if (lbl.length != 0) {

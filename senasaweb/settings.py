@@ -168,8 +168,8 @@ LIST_PER_PAGE = 15
 if os.name == "nt":
     SPATIALITE_LIBRARY_PATH = "C:/OSGeo4W/bin/libspatialite-1.dll"
     GDAL_LIBRARY_PATH = "C:/OSGeo4W/gdalwin32-1.6/bin/gdal16.dll"
-    DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.spatialite'
-    DATABASES['default']['NAME'] = os.path.join(ROOT_DIR,'senasaweb.sqlite')
+    #DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.spatialite'
+    #DATABASES['default']['NAME'] = os.path.join(ROOT_DIR,'senasaweb.sqlite')
     WMS_SERVICE = "http://www.senasa.gov.py/gisobras/wms"
     CONTEXT = ""
 else:

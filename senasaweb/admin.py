@@ -3,18 +3,39 @@ from django.contrib.gis import admin as gisadmin
 from dojango.util import dojo_collector
 from django.conf import settings
 
+from django.contrib.gis import gdal
+if gdal.HAS_GDAL:
+    # Use the official spherical mercator projection SRID on versions
+    # of GDAL that support it; otherwise, fallback to 900913.
+    if gdal.GDAL_VERSION >= (1, 7):
+        spherical_mercator_srid = 3857
+    else:
+        spherical_mercator_srid = 900913
+
+
 class MyGeoModelAdmin(gisadmin.GeoModelAdmin):
-    max_extent =  '-81414.425199, 6950131.660985, 778278.875001, 7864759.500000'
-    map_srid = 32721
-    wms_url = settings.WMS_SERVICE
-    wms_layer = 'default'
-    wms_name = 'Senasa WMS'
+    #max_extent =  '-81414.425199, 6950131.660985, 778278.875001, 7864759.500000'
+    #map_srid = 32721
+    #wms_url = settings.WMS_SERVICE
+    #wms_layer = 'default'
+    #wms_name = 'Senasa WMS'
     units = 'm'
-    max_resolution = "'auto'"
-    num_zoom = 8
-    default_zoom = 0
-    default_lon = 454085
-    default_lat = 7427009
+    #max_resolution = "'auto'"
+    #num_zoom = 8
+    #default_zoom = 0
+    #default_lon = 454085
+    #default_lat = 7427009
+    map_template = 'gis/admin/mapbox.html'
+    num_zoom = 17
+    map_srid = spherical_mercator_srid
+    max_extent = '-20037508,-20037508,20037508,20037508'
+    max_resolution = '156543.0339'
+    point_zoom = num_zoom - 6
+    default_zoom = 12
+    default_lon = -6395183.6125250775000000
+    default_lat = -2664167.8687612307000000
+
+
     view = False
 
     def has_view_permission(self, request, obj=None):

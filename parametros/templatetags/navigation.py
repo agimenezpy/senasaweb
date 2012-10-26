@@ -13,15 +13,16 @@ def load_navigation(context):
     splt = req.path[1:].split("/")
     sel = ''
     splt.remove(settings.CONTEXT.replace("/",""))
+    splt.remove("admin")
     if len(splt) > 1:
-        sel =  splt[0]
+        sel = REEMP[splt[0].title()].lower()
     app_order(rst.context_data)
     context.update({'app_list' : rst.context_data['app_list'], "selected" : sel})
     return context
 
 @register.filter
 def disable_attr(wkt):
-    wkt.field.widget.attrs['disabled'] = 'disabled'
+    wkt.field.widget.attrs['readonly'] = 'readonly'
     return wkt
 
 @register.simple_tag
