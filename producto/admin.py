@@ -15,11 +15,16 @@ class EstadoInline(admin.TabularInline):
     extra = 0
     readonly_fields = ('fecha_insercion','fecha_actualizacion','autor')
 
+class ComentarioInline(admin.TabularInline):
+    model = Comentario
+    extra = 0
+    readonly_fields = ('fecha_insercion','fecha_actualizacion','autor')
+
 class ObraAdmin(GeoModelAdmin):
-    list_display = ('codigo','distrito','direccion','proceso','porcentaje','inicio','fin','producto','grupo')
+    list_display = ('codigo','distrito','locacion','proceso','porcentaje','inicio','fin','estado','producto','grupo')
     list_per_page = settings.LIST_PER_PAGE
     list_max_show_all = settings.LIST_PER_PAGE
-    list_editable = ('proceso','porcentaje','inicio','fin')
+    list_editable = ('proceso','porcentaje','inicio','fin','estado')
     search_fields = ('producto__etiqueta','codigo')
     list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
     list_select_related = True
@@ -35,17 +40,17 @@ class ObraAdmin(GeoModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields' : ('grupo','producto','cantidad','poblacion','tipo_poblacion','propietario')
+            'fields' : ('grupo','producto','cantidad','poblacion','tipo_poblacion','propietario','fecha_inicio')
         }),
         (u"Seguimiento", {
-            'fields' : ('inicio','fin','proceso','porcentaje')
+            'fields' : ('inicio','fin','proceso','porcentaje','estado')
         }),
         (u"Junta de Saneamiento", {
             'fields' : ('organizacion','junta')
         }),
         (u"Ubicación", {
             'classes' : ('tab',),
-            'fields' : ('distrito','localidad','direccion','coordenada_x','coordenada_y','ubicacion')
+            'fields' : ('distrito','localidad','locacion','coordenada_x','coordenada_y','ubicacion')
         })
     )
 
@@ -66,14 +71,11 @@ class ObraAdmin(GeoModelAdmin):
     def save_model(self, request, obj, form, change):
         if getattr(obj, 'propietario', None) is None:
             obj.propietario = request.user
-        if obj.coordenada_x == 0 and obj.coordenada_y == 0:
-            ubc = obj.localidad.geom.centroid if obj.localidad is not None else obj.distrito.geom.centroid
-            obj.ubicacion = ubc
-        elif not obj.ubicacion:
+        if obj.coordenada_x != 0 and obj.coordenada_y != 0:
             pt = Point(obj.coordenada_x, obj.coordenada_y,srid=32721)
             obj.ubicacion = pt
-        obj.salva = request.user
-        obj.save()
+        obj.modifica = request.user
+        super(ObraAdmin, self).save_model(request, obj, form, change)
 
     def get_urls(self):
         urlpatterns = super(ObraAdmin,self).get_urls()
@@ -123,7 +125,7 @@ class ObraAdmin(GeoModelAdmin):
                 return chPerm
 
 class ObraListAdmin(ModelAdmin):
-    list_display = ('codigo','distrito','direccion','proceso','progreso','fecha_inicio','fecha_fin','producto','grupo')
+    list_display = ('codigo','distrito','locacion','fmt_finicio','proceso','progreso','fmt_inicio','fmt_fin','producto','grupo')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('producto__etiqueta','codigo')
     list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
@@ -137,25 +139,36 @@ class ObraListAdmin(ModelAdmin):
     progreso.admin_order_field = 'porcentaje'
     progreso.short_description = "Progreso"
 
-    def fecha_inicio(self, obj):
+    def fmt_finicio(self, obj):
         return obj.inicio.strftime("%d/%m/%Y")
-    fecha_inicio.short_description = "Inicio"
-    fecha_inicio.admin_order_field = 'inicio'
+    fmt_finicio.short_description = "Inicio de obra"
+    fmt_finicio.admin_order_field = 'fecha_inicio'
 
-    def fecha_fin(self, obj):
+    def fmt_inicio(self, obj):
+        return obj.inicio.strftime("%d/%m/%Y")
+    fmt_inicio.short_description = "Inicio"
+    fmt_inicio.admin_order_field = 'inicio'
+
+    def fmt_fin(self, obj):
         return obj.fin.strftime("%d/%m/%Y")
-    fecha_fin.short_description = "Fin"
-    fecha_fin.admin_order_field = 'fin'
+    fmt_fin.short_description = "Fin"
+    fmt_fin.admin_order_field = 'fin'
 
     def export(self, request, extra_context=None):
         return export_obras_xls(self,request,None)
 
 class ContactoAdmin(ModelAdmin):
-    list_display = ('obra','cedula', 'nombres', 'apellidos', 'telefono_celular')
+    list_display = ('cedula', 'nombres', 'apellidos', 'telefono_celular','obra')
     list_display_links = ('cedula',)
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombres','apellidos')
     raw_id_fields = ('obra',)
+    list_select_related = True
+    inlines = (ComentarioInline,)
+
+    def save_model(self, request, obj, form, change):
+        obj.modifica = request.user
+        super(ContactoAdmin, self).save_model(request, obj, form, change)
 
 admin.site.register(Obra, ObraAdmin)
 admin.site.register(Contacto, ContactoAdmin)

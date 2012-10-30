@@ -13,5 +13,5 @@
         wrapDateLine: true,
         transitionEffect: "resize",
         buffer: 1
-    }); OpenLayers.Projection.addTransform("EPSG:32721", "EPSG:900913", OpenLayers.Layer.SphericalMercator.projectForward);
+    });
 {% endblock %}

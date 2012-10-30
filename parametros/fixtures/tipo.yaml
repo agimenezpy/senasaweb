@@ -1,10 +1,4 @@
 - model: parametros.Tipo
-  pk: 0
-  fields:
-    etiqueta: No definido
-    orden: 0
-    categoria: PRD
-- model: parametros.Tipo
   pk: 1
   fields:
     etiqueta: Conformada
@@ -17,28 +11,34 @@
     orden: 2
     categoria: SJS
 - model: parametros.Tipo
+  pk: 19
+  fields:
+    etiqueta: Solicitud
+    orden: 1
+    categoria: PRO
+- model: parametros.Tipo
   pk: 3
   fields:
     etiqueta: Diseño
-    orden: 1
+    orden: 2
     categoria: PRO
 - model: parametros.Tipo
   pk: 4
   fields:
     etiqueta: Llamado
-    orden: 2
+    orden: 3
     categoria: PRO
 - model: parametros.Tipo
   pk: 5
   fields:
     etiqueta: Ejecución
-    orden: 3
+    orden: 4
     categoria: PRO
 - model: parametros.Tipo
   pk: 6
   fields:
     etiqueta: Finalizado
-    orden: 4
+    orden: 5
     categoria: PRO
 - model: parametros.Tipo
   pk: 8
@@ -59,34 +59,40 @@
     orden: 3
     categoria: ORG
 - model: parametros.Tipo
+  pk: 18
+  fields:
+    etiqueta: No definido
+    orden: 1
+    categoria: PRD
+- model: parametros.Tipo
   pk: 11
   fields:
     etiqueta: Suministro de Agua Potable
-    orden: 1
+    orden: 2
     categoria: PRD
 - model: parametros.Tipo
   pk: 12
   fields:
     etiqueta: Soluciones Sanitarias Mejoradas
-    orden: 2
+    orden: 3
     categoria: PRD
 - model: parametros.Tipo
   pk: 13
   fields:
     etiqueta: Unidades Básicas Sanitarias
-    orden: 3
+    orden: 4
     categoria: PRD
 - model: parametros.Tipo
   pk: 14
   fields:
     etiqueta: Letrinas
-    orden: 4
+    orden: 5
     categoria: PRD
 - model: parametros.Tipo
   pk: 15
   fields:
     etiqueta: Alcantarillado Sanitario Condominial
-    orden: 5
+    orden: 6
     categoria: PRD
 - model: parametros.Tipo
   pk: 16

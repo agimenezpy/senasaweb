@@ -42,13 +42,10 @@ def export_obras(modeladmin, request, queryset,processor):
         w,params = queryset.query.where.as_sql(connection.ops.quote_name,connection)
         filtro = "WHERE " + w
 
-    agg_func = "array_to_string(array_agg(estado.descripcion),'<br/>')"
-    if settings.DATABASES['default']['ENGINE'] == 'django.contrib.gis.db.backends.spatialite':
-        agg_func = "GROUP_CONCAT(estado.descripcion,'<br/>')"
     sql = (r"""
 SELECT obra.id,
 departamento.nombre as departamento_nombre,
-obra.direccion,
+obra.locacion,
 distrito.codigo as distrito_id,
 distrito.nombre as distrito_nombre,
 proyecto.nombre as proyecto_nombre,
@@ -59,31 +56,17 @@ grupo.descripcion as grupo_descripcion,
 producto_id,
 cantidad,
 poblacion,
-%s as estado_descripcion
+estado as estado_descripcion
 FROM obra
 JOIN distrito ON distrito.codigo = obra.distrito_id
 JOIN departamento ON departamento.codigo = distrito.departamento_id
 JOIN grupo_obra grupo ON grupo.codigo = grupo_id
 JOIN proyecto ON proyecto.id = grupo.proyecto_id
-LEFT JOIN estado ON estado.obra_id = obra.codigo
 %s
-GROUP BY obra.id,
-departamento.nombre,
-obra.direccion,
-distrito.codigo,
-distrito.nombre,
-proyecto.nombre,
-proceso_id,
-organizacion_id,
-grupo.codigo,
-grupo.descripcion,
-producto_id,
-cantidad,
-poblacion
 ORDER BY distrito.codigo,grupo.codigo
-""" % (agg_func,filtro))
+""" % filtro)
     fields = ((u"Departamento","departamento_nombre"),
-              (u"Localidad","direccion"),
+              (u"Localidad","locacion"),
               (u"Distrito","distrito_nombre"),
               (u"Nombre programa","proyecto_nombre"),
               (u"Proceso","proceso_id"),

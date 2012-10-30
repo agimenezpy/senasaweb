@@ -33,7 +33,7 @@ r"12_Neembucu/Departamental/neeloc.shp",
 DISTRITOS = "Nacional/pydto.shp"
 DEPARTAMENTOS = "Nacional/pydpto.shp"
 
-def dump_file(filename,funcion,name,pk1=None,pk2=None,pk3=None,idx=0):
+def dump_file(filename,funcion,name,pk1=None,pk2=None,pk3=None,idx=0,fpath=""):
     fn = gdal.DataSource(filename)
     print filename
     codigo = ""
@@ -53,10 +53,10 @@ def dump_file(filename,funcion,name,pk1=None,pk2=None,pk3=None,idx=0):
                         value = int(value.strip(), 10)
                     else:
                         d = Departamento.objects.get(geom__contains=row.geom.geos.centroid)
-                        value = d.pk
+                        value = int(d.codigo,10)
                 else:
                     d = Departamento.objects.get(geom__contains=row.geom.geos.centroid)
-                    value = d.pk
+                    value = int(d.codigo,10)
                 k1 = value
             except Exception,e:
                 print row,connection.queries[-1]['sql'],e
@@ -75,12 +75,12 @@ def dump_file(filename,funcion,name,pk1=None,pk2=None,pk3=None,idx=0):
                         value = int(value.strip(), 10)
                     else:
                         g = row.geom
-                        d = Distrito.objects.filter(departamento_id__exact=idx).get(geom__contains=g.geos.centroid)
-                        value = int(d.pk[2:],10)
+                        d = Distrito.objects.filter(departamento_id__exact="%02d" % idx).get(geom__contains=g.geos.centroid)
+                        value = int(d.codigo[2:],10)
                 else:
                     g = row.geom
-                    d = Distrito.objects.filter(departamento_id__exact=idx).get(geom__contains=g.geos.centroid)
-                    value = int(d.pk[2:], 10)
+                    d = Distrito.objects.filter(departamento_id__exact="%02d" % idx).get(geom__contains=g.geos.centroid)
+                    value = int(d.codigo[2:], 10)
                 k2 = value
             except Exception, e:
                 print row,connection.queries[-1]['sql'],e
@@ -117,27 +117,31 @@ def dump_file(filename,funcion,name,pk1=None,pk2=None,pk3=None,idx=0):
         except:
             continue
             rownum += 1
-        funcion(idx,codigo,nombre,row.geom,k1,k2,k3)
+        funcion(idx,codigo,nombre,row.geom,k1,k2,k3,fpath=fpath,fid=row.fid)
         rownum += 1
 
 def procesar_departamento(*args,**kwargs):
     idx,codigo,nombre,geom,k1 = args[:5]
     DEP.write(r"""- model: %s.Departamento
-  pk: %d
+  pk:
   fields:
+    codigo: '%s'
     nombre: %s
     geom: %s
-""" % (MODULE,k1,nombre.decode("latin-1").encode("UTF-8"),geom.hex))
+""" % (MODULE,"%02d" % k1,nombre.decode("latin-1").encode("UTF-8"),geom.hex))
+    CSV.write("DEPARTAMENTO\t%s\t%s\t%s\t%d\t%s\t\n" % ("%02d" % k1,nombre,"",kwargs["fid"],kwargs["fpath"]))
 
 def procesar_distrito(*args,**kwargs):
     idx,codigo,nombre,geom,k1,k2 = args[:6]
     DIST.write("""- model: %s.Distrito
-  pk: '%s'
+  pk:
   fields:
+    codigo: '%s'
     nombre: %s
-    departamento: %s
+    departamento: '%s'
     geom: %s
-""" % (MODULE,codigo,nombre.decode("latin-1").encode("UTF-8"),k1,geom.hex))
+""" % (MODULE,codigo,nombre.decode("latin-1").encode("UTF-8"),"%02d" % k1,geom.hex))
+    CSV.write("DISTRITO\t%s\t%s\t%s\t%d\t%s\t\n" % (codigo,nombre,"%02d" % k1,kwargs["fid"],kwargs["fpath"]))
 
 def procesar_localidad(*args,**kwargs):
     idx,codigo,nombre,geom,k1,k2,k3 = args[:7]
@@ -161,38 +165,50 @@ def procesar_localidad(*args,**kwargs):
     if k2 == None:
         k2 = 0
     LOC.write("""- model: %s.Localidad
-  pk: '%s'
+  pk:
   fields:
+    codigo: '%s'
     nombre: %s
     distrito: '%s'
     geom: %s
 """ % (MODULE,codigo,nombre.decode("latin-1").encode("UTF-8"),"%02d%02d" % (k1,k2),geom.hex))
+    CSV.write("LOCALIDAD\t%s\t%s\t%s\t%d\t%s\tRURAL\n" % (codigo,nombre,"%02d%02d" % (k1,k2),kwargs["fid"],kwargs["fpath"]))
 
 DEP = None
 DIST = None
 LOC = None
+CSV = None
 
 def do_dep():
     global DEP
+    global CSV
+    CSV = open("scripts/division_politica.csv","w")
     DEP = open('%s/fixtures/departamento.yaml' % MODULE,'w')
-    dump_file(os.path.join(ROOT_DIR,DEPARTAMENTOS),procesar_departamento,"DEPARTAMEN","COD_DPTO")
+    dump_file(os.path.join(ROOT_DIR,DEPARTAMENTOS),procesar_departamento,"DEPARTAMEN","COD_DPTO",fpath=DEPARTAMENTOS)
     DEP.close()
+    CSV.close()
 
 def do_dist():
     global DIST
+    global CSV
+    CSV = open("scripts/division_politica.csv","a")
     DIST = open('%s/fixtures/distrito.yaml' % MODULE,'w')
-    dump_file(os.path.join(ROOT_DIR,DISTRITOS),procesar_distrito,"DISTRITO","COD_DPTO","COD_DTO")
+    dump_file(os.path.join(ROOT_DIR,DISTRITOS),procesar_distrito,"DISTRITO","COD_DPTO","COD_DTO",fpath=DISTRITOS)
     DIST.close()
+    CSV.close()
 
 def do_loc():
     global LOC
+    global CSV
+    CSV = open("scripts/division_politica.csv","a")
     LOC = open('%s/fixtures/localidad.yaml' % MODULE,'w')
-    dump_file(os.path.join(ROOT_DIR,LOCS[0]), procesar_localidad,"NOMBRE",None,None,"BARRIO",0)
+    dump_file(os.path.join(ROOT_DIR,LOCS[0]), procesar_localidad,"NOMBRE",None,None,"BARRIO",0,fpath=LOCS[0])
     for idx in range(1, len(LOCS)):
-        dump_file(os.path.join(ROOT_DIR,LOCS[idx]),procesar_localidad,"DESCLOCA|DESCLOC", "DEPARTAMEN", "DISTRITO", "BARRIO", idx)
+        dump_file(os.path.join(ROOT_DIR,LOCS[idx]),procesar_localidad,"DESCLOCA|DESCLOC", "DEPARTAMEN", "DISTRITO", "BARRIO", idx,fpath=LOCS[idx])
     LOC.close()
+    CSV.close()
 
 if __name__ == "__main__":
-    #do_dep()
-    #do_dist()
+    do_dep()
+    do_dist()
     do_loc()

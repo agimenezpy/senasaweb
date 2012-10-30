@@ -15,7 +15,7 @@ def load_navigation(context):
     splt.remove(settings.CONTEXT.replace("/",""))
     splt.remove("admin")
     if len(splt) > 1:
-        sel = REEMP[splt[0].title()].lower()
+        sel = REEMP[splt[0].title()].lower() if REEMP.has_key(splt[0].title()) else ""
     app_order(rst.context_data)
     context.update({'app_list' : rst.context_data['app_list'], "selected" : sel})
     return context

@@ -2,18 +2,20 @@
 from django.db import models
 from django.contrib.gis.db import models as gismodels
 from django.contrib.auth.models import User as Usuario
+from django.contrib.gis.gdal import SpatialReference
 
 class Departamento(gismodels.Model):
-    codigo = models.IntegerField(u"código",primary_key=True)
+    codigo = models.CharField(u"código",unique=True,max_length=2,editable=False)
     nombre = models.CharField(u"nombre de departamento",max_length=150)
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
     objects = gismodels.GeoManager()
 
     def get_extent(self):
-        return self.geom.extent
+        wgs84 = SpatialReference('EPSG:4326')
+        return self.geom.transform(wgs84,clone=True).extent
 
     def __unicode__(self):
-        return u"[%d] %s" % (self.codigo, self.nombre)
+        return u"[%s] %s" % (self.codigo, self.nombre)
 
     class Meta:
         verbose_name = "departamento"
@@ -23,17 +25,18 @@ class Departamento(gismodels.Model):
         permissions = (('view_departamento','Can view departamento'),)
 
 class Distrito(gismodels.Model):
-    codigo = models.CharField(u"código",primary_key=True,max_length=4,editable=False)
+    codigo = models.CharField(u"código",unique=True,max_length=4,editable=False)
     nombre = models.CharField(u"nombre de distrito",max_length=150)
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
-    departamento = models.ForeignKey(Departamento, verbose_name="departamento",on_delete=models.PROTECT)
+    departamento = models.ForeignKey(Departamento, verbose_name="departamento",to_field="codigo",on_delete=models.PROTECT)
     objects = gismodels.GeoManager()
 
     def get_extent(self):
-        return self.geom.extent
+        wgs84 = SpatialReference('EPSG:4326')
+        return self.geom.transform(wgs84,clone=True).extent
 
     def __unicode__(self):
-        return u"[%s] %s" % (self.codigo, self.nombre)
+        return u"[%s] %s - %s" % (self.codigo, self.nombre, self.departamento.nombre)
 
     class Meta:
         verbose_name = "distrito"
@@ -43,21 +46,23 @@ class Distrito(gismodels.Model):
         permissions = (('view_distrito','Can view distrito'),)
 
     def save(self, *args, **kwargs):
-        if self.codigo is None or len(self.codigo) == 0:
-            self.codigo = "%02d%02d" % (self.departamento_id,
+        if self.codigo  == "":
+            self.codigo = "%s%02d" % (self.departamento_id,
                                         Distrito.objects.filter(departamento_id__exact=self.departamento_id)
                                                     .aggregate(models.Count("codigo"))["codigo__count"] + 1)
         super(Distrito, self).save(*args, **kwargs)
 
 class Localidad(gismodels.Model):
-    codigo = models.CharField(u"código",primary_key=True,max_length=8,editable=False)
+    codigo = models.CharField(u"código",unique=True,max_length=8,editable=False)
     nombre = models.CharField(u"nombre",max_length=150)
+    tipo = models.CharField(u"tipo",max_length=8,choices=(("RURAL","RURAL"),("URBANO","URBANO")),default="RURAL")
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
-    distrito = models.ForeignKey(Distrito, verbose_name="distrito",on_delete=models.PROTECT)
+    distrito = models.ForeignKey(Distrito, verbose_name="distrito",to_field="codigo",on_delete=models.PROTECT)
     objects = gismodels.GeoManager()
 
     def get_extent(self):
-        return self.geom.extent
+        wgs84 = SpatialReference('EPSG:4326')
+        return self.geom.transform(wgs84,clone=True).extent
 
     def __unicode__(self):
         return u"[%s] %s" % (self.codigo, self.nombre)
