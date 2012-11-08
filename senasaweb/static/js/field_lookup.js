@@ -1,3 +1,4 @@
+last_values = {}
 function prepare_lookup() {
     var map = null;
     if (this['geodjango_geom'])
@@ -8,16 +9,21 @@ function prepare_lookup() {
         function(node, index, nodeList) {
             field_name = node.id.split("_")[1];
             dojo.connect(node, "onblur", {"node": node, "map" : map, "field_name" : field_name}, handle_lookup);
+            dojo.connect(node, "onfocus", {"node": node, "map" : map, "field_name" : field_name}, handle_lookup);
         }
     )
+    if (map) {
+        dojo.connect(dojo.byId("centerPanel"),"scroll",map,function(obj){map.updateSize()})
+    }
 }
 
 function handle_lookup() {
     var map = this.map;
     var field_name = this.field_name;
     var value = this.node.value;
-    if (value.trim().length == 0)
+    if (value.trim().length == 0 || value == last_values[field_name])
         return;
+    last_values[field_name] = value;
     dojo.block("container");
     dojo.xhr.get({
         url: window.__prefix__ + "/lookup/" + field_name + "/" + value,
@@ -66,4 +72,16 @@ function handle_lookup() {
             }
         }
     })
+}
+
+function dismissRelatedLookupPopup(win, chosenId) {
+    var name = windowname_to_id(win.name);
+    var elem = document.getElementById(name);
+    if (elem.className.indexOf('vManyToManyRawIdAdminField') != -1 && elem.value) {
+        elem.value += ',' + chosenId;
+    } else {
+        document.getElementById(name).value = chosenId;
+    }
+    elem.focus()
+    win.close();
 }

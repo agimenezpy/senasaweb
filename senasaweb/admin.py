@@ -61,7 +61,7 @@ class MyGeoModelAdmin(gisadmin.GeoModelAdmin):
             tmp = super(MyGeoModelAdmin,self).change_view(request, object_id, form_url, extra_context)
             self.view = False
             if hasattr(tmp, 'context_data'):
-                tmp.context_data.update({'change':False,'title':u"Detalle de la Cuenta",
+                tmp.context_data.update({'change':False,'title':u"Detalle de %s" % self.model._meta.verbose_name,
                                          'has_change_permission':False})
             return tmp
         else:
@@ -102,7 +102,7 @@ class MyModelAdmin(admin.ModelAdmin):
             tmp = super(MyModelAdmin,self).change_view(request, object_id, form_url, extra_context)
             self.view = False
             if hasattr(tmp, 'context_data'):
-                tmp.context_data.update({'change':False,'title':u"Detalle de la Cuenta",
+                tmp.context_data.update({'change':False,'title':u"Detalle de %s" % self.model._meta.verbose_name,
                                          'has_change_permission':False})
             return tmp
         else:

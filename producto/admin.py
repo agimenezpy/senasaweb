@@ -25,7 +25,7 @@ class ObraAdmin(GeoModelAdmin):
     list_per_page = settings.LIST_PER_PAGE
     list_max_show_all = settings.LIST_PER_PAGE
     list_editable = ('proceso','porcentaje','inicio','fin','estado')
-    search_fields = ('producto__etiqueta','codigo')
+    search_fields = ('producto__etiqueta','codigo','locacion')
     list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
     list_select_related = True
     inlines = (EstadoInline,)
@@ -127,7 +127,7 @@ class ObraAdmin(GeoModelAdmin):
 class ObraListAdmin(ModelAdmin):
     list_display = ('codigo','distrito','locacion','fmt_finicio','proceso','progreso','fmt_inicio','fmt_fin','producto','grupo')
     list_per_page = settings.LIST_PER_PAGE
-    search_fields = ('producto__etiqueta','codigo')
+    search_fields = ('producto__etiqueta','codigo','locacion')
     list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
     list_select_related = True
     actions = [export_obras_xls,export_obras_pdf]

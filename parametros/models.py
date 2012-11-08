@@ -17,6 +17,17 @@ class Departamento(gismodels.Model):
     def __unicode__(self):
         return u"[%s] %s" % (self.codigo, self.nombre)
 
+    def save(self, *args, **kwargs):
+        if self.codigo  == "":
+            qty = Departamento.objects.raw("SELECT 0 as id,MAX(cast(codigo as int)) as secuencia__max FROM " +
+                                        self._meta.db_table)[0].secuencia__max
+            if qty is None:
+                qty = 0
+            else:
+                qty += 1
+            self.codigo= "%02d" % qty
+        super(Departamento, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = "departamento"
         verbose_name_plural = "departamentos"

@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load url from future %}
 {% if not is_popup and app_list  %}
-    <div id="navigation" data-dojo-type="dijit.layout.AccordionContainer" data-dojo-props="region: 'left', minSize: 250, splitter: true">
+    <div id="navigation" data-dojo-type="dijit.layout.AccordionContainer" data-dojo-props="region: 'left', minSize: 100, splitter: true">
     {% for app in app_list %}
         <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top',title:'{% blocktrans with name=app.name %}{{ name }}{% endblocktrans %}'"
                 {% if app.name|lower == selected %} selected="true" {% endif %}>
