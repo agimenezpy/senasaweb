@@ -20,6 +20,11 @@ class ComentarioInline(admin.TabularInline):
     extra = 0
     readonly_fields = ('fecha_insercion','fecha_actualizacion','autor')
 
+class ComisionInline(admin.TabularInline):
+    model = Comision
+    raw_id_fields = ('contacto',)
+    extra = 0
+
 class ObraAdmin(GeoModelAdmin):
     list_display = ('codigo','distrito','locacion','proceso','porcentaje','inicio','fin','estado','producto','grupo')
     list_per_page = settings.LIST_PER_PAGE
@@ -30,7 +35,7 @@ class ObraAdmin(GeoModelAdmin):
     list_select_related = True
     inlines = (EstadoInline,)
     readonly_fields = ('propietario',)
-    raw_id_fields = ('distrito','localidad','grupo')
+    raw_id_fields = ('distrito','localidad','grupo','junta')
     form = ObraForm
 
     def __init__(self,model,admin_site):
@@ -46,7 +51,7 @@ class ObraAdmin(GeoModelAdmin):
             'fields' : ('inicio','fin','proceso','porcentaje','estado')
         }),
         (u"Junta de Saneamiento", {
-            'fields' : ('organizacion','junta')
+            'fields' : ('organizacion','tipo_junta','junta')
         }),
         (u"Ubicación", {
             'classes' : ('tab',),
@@ -125,7 +130,7 @@ class ObraAdmin(GeoModelAdmin):
                 return chPerm
 
 class ObraListAdmin(ModelAdmin):
-    list_display = ('codigo','distrito','locacion','fmt_finicio','proceso','progreso','fmt_inicio','fmt_fin','producto','grupo')
+    list_display = ('codigo','distrito','georeferencia','locacion','fmt_finicio','proceso','progreso','fmt_inicio','fmt_fin','producto','grupo')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('producto__etiqueta','codigo','locacion')
     list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
@@ -138,6 +143,14 @@ class ObraListAdmin(ModelAdmin):
     progreso.allow_tags = True
     progreso.admin_order_field = 'porcentaje'
     progreso.short_description = "Progreso"
+
+    def georeferencia(self,obj):
+        if obj.ubicacion is None:
+            return False
+        else:
+            return obj.distrito.geom.contains(obj.ubicacion)
+    georeferencia.short_description = "Coordenada"
+    georeferencia.boolean = True
 
     def fmt_finicio(self, obj):
         return obj.inicio.strftime("%d/%m/%Y")
@@ -158,11 +171,10 @@ class ObraListAdmin(ModelAdmin):
         return export_obras_xls(self,request,None)
 
 class ContactoAdmin(ModelAdmin):
-    list_display = ('cedula', 'nombres', 'apellidos', 'telefono_celular','obra')
+    list_display = ('cedula', 'nombres', 'apellidos', 'telefono_celular')
     list_display_links = ('cedula',)
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombres','apellidos')
-    raw_id_fields = ('obra',)
     list_select_related = True
     inlines = (ComentarioInline,)
 
@@ -170,5 +182,15 @@ class ContactoAdmin(ModelAdmin):
         obj.modifica = request.user
         super(ContactoAdmin, self).save_model(request, obj, form, change)
 
+class JuntaAdmin(ModelAdmin):
+    list_display = ('nombre','distrito','telefono')
+    list_per_page = settings.LIST_PER_PAGE
+    search_fields = ('nombre',)
+    list_select_related = True
+    inlines = (ComisionInline,)
+    raw_id_fields = ('distrito',)
+
+
 admin.site.register(Obra, ObraAdmin)
 admin.site.register(Contacto, ContactoAdmin)
+admin.site.register(Junta, JuntaAdmin)

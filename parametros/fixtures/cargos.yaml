@@ -1,0 +1,24 @@
+- model: parametros.Tipo
+  pk: 19
+  fields:
+    etiqueta: Presidente
+    orden: 1
+    categoria: CRG
+- model: parametros.Tipo
+  pk: 20
+  fields:
+    etiqueta: Vice Presidente
+    orden: 2
+    categoria: CRG
+- model: parametros.Tipo
+  pk: 21
+  fields:
+    etiqueta: Secretario
+    orden: 3
+    categoria: CRG
+- model: parametros.Tipo
+  pk: 22
+  fields:
+    etiqueta: Tesorero
+    orden: 4
+    categoria: CRG

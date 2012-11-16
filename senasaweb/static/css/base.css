@@ -44,3 +44,26 @@ ul {padding: 0px;}
 .results {
     overflow-x: auto;
 }
+
+/* Seccion de la pagina principal del mapa */
+.hmap {background-color: rgb(78,139,184);height: 62px;}
+#map { position:absolute; top:63px; bottom:0; left: 0px; right: 250px; z-index: 0 }
+.contentmap {top:63px; right: 0px; bottom: 0px; width: 209px;padding: 10px; background-color: rgba(255,255,255,0.9);position:absolute}
+.contentmap h2 {color: #ccccff}
+.contentmap ul li {list-style-type: none}
+.mmg {
+    width: 15px;
+    height: 15px;
+    z-index: 3;
+    position: absolute;
+    cursor: pointer;
+    pointer-events:all;
+}
+.mmg-blue { background: url(../img/blue.png) no-repeat left bottom; }
+.mmg-lila { background: url(../img/lila.png) no-repeat left bottom; }
+.mmg-green { background: url(../img/green.png) no-repeat left bottom; }
+.mmg-yellow { background: url(../img/yellow.png) no-repeat left bottom; }
+.mmg-black { background: url(../img/black.png) no-repeat left bottom; }
+.mmg-white { background: url(../img/white.png) no-repeat left bottom; }
+.mmg-default { background: url(../img/red.png) no-repeat left bottom; }
+.mmg-orange { background: url(../img/orange.png) no-repeat left bottom; }

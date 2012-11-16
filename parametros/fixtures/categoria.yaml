@@ -18,3 +18,7 @@
   pk: POB
   fields:
     nombre: Tipo de Población
+- model: parametros.Categoria
+  pk: CRG
+  fields:
+    nombre: Cargo

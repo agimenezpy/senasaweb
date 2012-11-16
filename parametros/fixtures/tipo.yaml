@@ -59,7 +59,7 @@
     orden: 3
     categoria: ORG
 - model: parametros.Tipo
-  pk: 18
+  pk: 0
   fields:
     etiqueta: No definido
     orden: 1

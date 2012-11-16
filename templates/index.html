@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Obras</title>
+{% load static %}
+{% get_static_prefix as STATIC_PREFIX %}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_PREFIX }}css/{{ theme }}/jquery-ui.custom.css" />
+    <link rel="stylesheet" type="text/css" href="http://api.tiles.mapbox.com/mapbox.js/v0.6.6/mapbox.css" />
+</head>
+<body>
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}" ></script>
+    <script type="text/javascript" src="http://api.tiles.mapbox.com/mapbox.js/v0.6.6/mapbox.js" ></script>
+    <script type="text/javascript" src="{% static 'js/script.js' %}" ></script>
+    <div class='hmap'><div id="header"><div id="branding"><h1>Obras de Infraestructura</h1></div></div></div>
+    <div class="contentmap"><img src="{% static 'img/senasa.png'  %}"/>
+        <h2>Departamento</h2>
+        <select name="departamento">
+            <option value='Ninguno'>Ninguno</option>
+            {% for key,value in departamento %}
+            <option value='{{ value|last }}'>({{ key }}) {{ value|first }}</option>
+            {% endfor %}
+        </select>
+        <h2>Producto</h2>
+        <ul>
+        <li><input id="chkTodos" type="checkbox" value="Todos" name="prod_check" checked="checked"/>  Todos</li>
+        {% for key, value in producto.items %}
+            <li><input type="checkbox" name='prod_check' value="{{ value }}" checked="checked"/>  {{ value }}</li>
+        {% endfor %}
+        </ul>
+        <h2>Proyecto</h2>
+        <ul>
+            <li><input id="chkTodosP" type="checkbox" value="Todos" name="proj_check" checked="checked"/>  Todos</li>
+            {% for key, value in proyecto.items %}
+                <li><input type="checkbox" name='proj_check' value="{{ value }}" checked="checked"/>  {{ value }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="map">
+        <div class="map-legends" >
+            <div class="map-legend">
+                <div><h1>Leyenda</h1></div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var ICONS = {{ iconos|safe }}
+        var main = Map('map',{
+            api: "{{ MAP }}",
+            center: {lat: {{ center_y }}, lon: {{ center_x }}, zoom: {{ zoom }} },
+            zoomRange: [7, 14],
+            features: ['zoomer',
+                'interaction',
+                'legend',
+                'attribution',
+                'zoombox']
+        });
+        main.layers({
+            obras: {
+                api: 'http://www.senasa.gov.py/wms/obras.jsonp'
+            }
+        });
+        main.markers();
+        $.each(ICONS, function(key, val) {
+            var img = '<div class="mmg mmg-' + val + '"></div>';
+            var lbl = '<label style="padding-left: 15px;">' + key + '</label>';
+            $(".map-legend").append('<div style="padding-top: 10px">'+img + lbl +'</div>')
+        });
+        {% with pri=grupos.keys|first sec=grupos.keys|slice:":2" %}
+        GRUPO = { {% for key,value in grupos.items %} {% if not forloop.first  %},{% endif %}"{{ key }}":["{{ value|first }}","{{ value|last }}"] {% endfor %} } ;
+        main.filters();
+        main.selects();
+        {% endwith %}
+    </script>
+</body>

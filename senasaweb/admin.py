@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.gis import admin as gisadmin
 from dojango.util import dojo_collector
 from django.contrib.gis.admin.options import spherical_mercator_srid
+from django.conf import settings
 
 
 class MyGeoModelAdmin(gisadmin.GeoModelAdmin):
@@ -25,7 +26,7 @@ class MyGeoModelAdmin(gisadmin.GeoModelAdmin):
     default_zoom = 7
     default_lon = -6395183.6125250775000000
     default_lat = -2664167.8687612307000000
-
+    wms_url = settings.TILE_MAP
 
     view = False
 

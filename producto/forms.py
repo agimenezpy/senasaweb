@@ -7,7 +7,7 @@ from parametros.models import Localidad,Distrito
 class ObraForm(ModelForm):
     def clean_localidad(self):
         localidad = self.cleaned_data['localidad']
-        if self.cleaned_data.has_key('distrito'):
+        if self.cleaned_data.has_key('distrito') and localidad is not None:
             distrito = self.cleaned_data['distrito']
             if localidad.distrito_id != distrito.codigo:
                 raise ValidationError("La localidad no pertenece al distrito")
@@ -28,7 +28,7 @@ class ObraForm(ModelForm):
 
     def clean_ubicacion(self):
         ubicacion = self.cleaned_data['ubicacion']
-        if self.cleaned_data.has_key('distrito'):
+        if self.cleaned_data.has_key('distrito') and ubicacion is not None:
             distrito = self.cleaned_data['distrito']
             if not distrito.geom.contains(ubicacion):
                 raise ValidationError("El punto escogido no esta dentro del distrito elegido")

@@ -172,12 +172,24 @@ if os.name == "nt":
     #DATABASES['default']['NAME'] = os.path.join(ROOT_DIR,'senasaweb.sqlite')
     WMS_SERVICE = "http://www.senasa.gov.py/gisobras/wms"
     CONTEXT = ""
+    CACHE_DIR = os.path.join(ROOT_DIR,"cache")
+    CACHE_TIMEOUT = 5
 else:
     SESSION_ENGINE = "django.contrib.sessions.backends.file"
     DEBUG = False
     TEMPLATE_DEBUG = DEBUG
     CONTEXT = "/gisobras"
     WMS_SERVICE = CONTEXT + "/wms"
+    CACHE_DIR = '/var/tmp/django_cache'
+    CACHE_TIMEOUT = 3600
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': CACHE_DIR,
+        'TIMEOUT': CACHE_TIMEOUT
+        }
+}
 
 # DOJANGO
 DOJANGO_DOJO_PROFILE = "local_release"
@@ -194,3 +206,5 @@ ADMIN_REORDER = (
 )
 
 DOWNLOAD_DIR = os.path.join(STATIC_ROOT,"descargas")
+TILE_MAP = "agimenez.map-eb2q2546" # mapbox.mapbox-light
+UI_THEME = 'smoothness'

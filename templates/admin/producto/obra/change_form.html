@@ -60,7 +60,7 @@
       {% include "admin/includes/fieldset.html" %}
     {% else %}
 </div>
-<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '{{ fieldset.name }}'">
+<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '{{ fieldset.name }}'" id="{{ fieldset.name|slugify|lower }}">
       {% include "admin/includes/fieldset.html" %}
     {% endifnotequal %}
   {% endfor %}

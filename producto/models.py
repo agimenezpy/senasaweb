@@ -21,8 +21,9 @@ class Obra(gismodels.Model):
     coordenada_x = models.FloatField("coordenada x",default=0)
     coordenada_y = models.FloatField("coordenada y",default=0)
     ubicacion = gismodels.PointField(u"ubicación geográfica",srid=32721,null=True,blank=True)
-    junta = models.ForeignKey(Tipo, verbose_name=u"situación de junta",related_name="+",
+    tipo_junta = models.ForeignKey(Tipo, verbose_name=u"situación de junta",related_name="+",
         limit_choices_to={'categoria__exact' : Tipo.TIPO_SITUACION},on_delete=models.PROTECT)
+    junta = models.ForeignKey('Junta',verbose_name="nombre de junta",null=True,blank=True)
     organizacion = models.ForeignKey(Tipo, verbose_name=u"tipo de organización",related_name="+",
         limit_choices_to={'categoria__exact' : Tipo.TIPO_ORGANIZACION},on_delete=models.PROTECT)
     grupo = models.ForeignKey(Grupo, verbose_name="grupo de obras",to_field='codigo',on_delete=models.PROTECT,null=True,blank=True)
@@ -30,6 +31,7 @@ class Obra(gismodels.Model):
         limit_choices_to={'categoria__exact' : Tipo.TIPO_PRODUCTO},on_delete=models.PROTECT)
     cantidad = models.IntegerField("cantidad de producto", default=0)
     poblacion = models.IntegerField(u"población beneficiada", default=0)
+    conexion = models.IntegerField("cantidad de conexiones",default=0)
     tipo_poblacion = models.ForeignKey(Tipo, verbose_name=u"tipo de población",related_name="+",
         limit_choices_to={'categoria__exact' : Tipo.TIPO_POBLACION},on_delete=models.PROTECT)
     propietario = models.ForeignKey(User, verbose_name="creado por",null=True,on_delete=models.PROTECT,related_name="+")
@@ -91,7 +93,6 @@ class Contacto(models.Model):
     apellidos = models.CharField("apellidos",max_length=80)
     telefono_celular = models.CharField("celular", max_length=15,validators=[RegexValidator("^09[6789]\d{7,7}$")],
         help_text=u"Introduzca el número de telefono. Ej 0981321123")
-    obra = models.ForeignKey(Obra, verbose_name=u"obra",on_delete=models.SET_DEFAULT, null=True,blank=True,default=None)
 
     def __unicode__(self):
         return u"[%d] %s %s" % (self.cedula, self.nombres, self.apellidos)
@@ -125,3 +126,36 @@ class Comentario(models.Model):
         verbose_name = "comentario"
         verbose_name_plural = "comentarios"
         permissions = (('view_comentario','Can view comentario'),)
+
+class Junta(models.Model):
+    nombre = models.CharField("nombre",max_length=80)
+    direccion = models.CharField("direccion",null=True,blank=True,max_length=100)
+    telefono = models.CharField(u"teléfono", max_length=15,validators=[RegexValidator("^09[6789]\d{7,7}$")],
+        help_text=u"Introduzca el número de telefono. Ej 0981321123",null=True,blank=True)
+    distrito = models.ForeignKey(Distrito, verbose_name="distrito",to_field="codigo",on_delete=models.PROTECT)
+    fecha_asamblea = models.DateField("fecha constitutiva",null=True,blank=True)
+    comision = models.ManyToManyField(Contacto,through='Comision')
+
+    def __unicode__(self):
+        return u"[%d] %s" % (self.id, self.nombre)
+
+    class Meta:
+        db_table = "junta"
+        verbose_name = "junta de saneamiento"
+        verbose_name_plural = "juntas de saneamiento"
+        permissions = (('view_junta','Can view junta'),)
+
+class Comision(models.Model):
+    contacto = models.ForeignKey(Contacto,verbose_name="contacto")
+    junta = models.ForeignKey(Junta,verbose_name="junta de saneamiento",related_name="+")
+    cargo = models.ForeignKey(Tipo, verbose_name=u"tipo de población",related_name="+",
+        limit_choices_to={'categoria__exact' : Tipo.TIPO_CARGO},on_delete=models.PROTECT)
+
+    def __unicode__(self):
+        return u"[%d y %d] %s" % (self.contacto_id, self.junta_id, self.cargo.etiqueta)
+
+    class Meta:
+        db_table = "comision_junta"
+        verbose_name = "comision"
+        verbose_name_plural = "comisiones"
+        permissions = (('view_comision','Can view comision'),)

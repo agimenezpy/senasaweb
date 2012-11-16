@@ -14,7 +14,8 @@ from senasaweb import admin
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'senasaweb.views.home', name='home'),
+    url(r'^$', 'producto.views.index', name='home'),
+    url(r'^features/obras/$', 'producto.views.obras', name='features'),
     # url(r'^senasaweb/', include('senasaweb.foo.urls')),
     url(r'^admin/', include(admin.site.urls)),
     (r'^lookup/(?P<model>\w+)/(?P<object_id>\w+)$', 'parametros.views.lookup_handler'),

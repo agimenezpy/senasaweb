@@ -14,6 +14,7 @@ function prepare_lookup() {
     )
     if (map) {
         dojo.connect(dojo.byId("centerPanel"),"scroll",map,function(obj){map.updateSize()})
+        dojo.connect(dojo.byId("ubicacion"),"scroll",map,function(obj){map.updateSize()})
     }
 }
 
