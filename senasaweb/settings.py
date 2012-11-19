@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.gis',
     'dojango',
+    'grappelli',
     'parametros',
     'seguridad',
     'producto',

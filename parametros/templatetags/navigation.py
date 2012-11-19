@@ -13,7 +13,10 @@ def load_navigation(context):
     splt = req.path[1:].split("/")
     sel = ''
     splt.remove(settings.CONTEXT.replace("/",""))
-    splt.remove("admin")
+    try:
+        splt.remove("admin")
+    except:
+        pass
     if len(splt) > 1:
         sel = REEMP[splt[0].title()].lower() if REEMP.has_key(splt[0].title()) else ""
     app_order(rst.context_data)

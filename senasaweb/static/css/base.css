@@ -45,6 +45,13 @@ ul {padding: 0px;}
     overflow-x: auto;
 }
 
+/* GRAPPELLI */
+.grp-placeholder-related-fk {
+    display: inline;
+    margin: 0px;
+    position: static;
+}
+
 /* Seccion de la pagina principal del mapa */
 .hmap {background-color: rgb(78,139,184);height: 62px;}
 #map { position:absolute; top:63px; bottom:0; left: 0px; right: 250px; z-index: 0 }

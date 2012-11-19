@@ -1,31 +1,69 @@
 {% extends "dojango/base_i18n.html" %}
-{% load admin_static navigation %}{% load url from future %}
+{% load admin_static navigation grp_tags %}{% load url from future %}
 
 {% block dojango_page_title %} {% block title %}{% endblock %} {% endblock %}
 {% block dojango_header_extra %}
 <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="{% static "grappelli/stylesheets/screen.css" %}" />
 {% block extrastyle %}{% endblock %}
 <link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}" />
 
 <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
+<script type="text/javascript" src="{% static 'js/jquery.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'grappelli/js/grappelli.min.js' %}" ></script>
 <script type="text/javascript">
     window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";
     window.__prefix__ = "{% context %}";
-    dojo.ready(function(){
-        dojo.fadeOut({
-            node: dojo.byId('loadingOverlay'),
-            duration: 1500,
-            onEnd: function(node){
-                dojo.style(node, 'display', 'none');
-            }
-        }).play();
-        dojo.style("container","visibility", "visible");
-        prepare_lookup();
-    });
+    var DATE_FORMAT = "{% get_date_format %}",
+    TIME_FORMAT = "{% get_time_format %}",
+    DATETIME_FORMAT = "{% get_datetime_format %}";
     dojo.addOnUnload(function() {
        dojo.block("container");
     });
+
+    (function($) {
+        $(document).ready(function() {
+            grappelli.initDateAndTimePicker();
+            var related_lookup_fields_fk = {% get_related_lookup_fields_fk adminform.model_admin %};
+            var autocomplete_fields_fk = {% get_autocomplete_lookup_fields_fk adminform.model_admin %};
+            $.each(related_lookup_fields_fk, function() {
+                $("#id_" + this).grp_related_fk({lookup_url:"{% url 'grp_related_lookup' %}"});
+            });
+            $.each(autocomplete_fields_fk, function() {
+                $("#id_" + this).grp_autocomplete_fk({
+                    lookup_url:"{% url 'grp_related_lookup' %}",
+                    autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
+                });
+            });
+
+            $('#loadingOverlay').fadeOut(1500, function(node){
+                $('#loadingOverlay').css('display', 'none');
+            });
+            $('#container').css("visibility", "visible");
+
+            var map = null;
+            var win = $(window)[0]
+            if (win['geodjango_geom'])
+                map = win['geodjango_geom'].map
+            if (win['geodjango_ubicacion'])
+                map = win['geodjango_ubicacion'].map
+            $(".vForeignKeyRawIdAdminField").map(function (o,a) {
+                if (a.name.match("localidad|departamento|distrito")) return a;
+            }).each(function (idx,obj) {
+                    if (autocomplete_fields_fk.indexOf(obj.name) != -1)
+                        tgt = $(obj).prev();
+                    else
+                        tgt = $(obj);
+                    tgt.bind("focus blur", {"map" : map, "jquery": $, "target" : obj},handle_lookup);
+            });
+            if (map) {
+                $("#centerPanel").scroll(function () {map.updateSize()});
+                $("#ubicacion").scroll(function () {map.updateSize()});
+            }
+        });
+    })(grp.jQuery);
 </script>
 {% block extrahead %}{% endblock %}
 <script type="text/javascript" src="{% static "js/block.js" %}"></script>

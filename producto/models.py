@@ -94,6 +94,10 @@ class Contacto(models.Model):
     telefono_celular = models.CharField("celular", max_length=15,validators=[RegexValidator("^09[6789]\d{7,7}$")],
         help_text=u"Introduzca el número de telefono. Ej 0981321123")
 
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("nombre__icontains","apellido__icontains")
+
     def __unicode__(self):
         return u"[%d] %s %s" % (self.cedula, self.nombres, self.apellidos)
 
@@ -136,6 +140,10 @@ class Junta(models.Model):
     fecha_asamblea = models.DateField("fecha constitutiva",null=True,blank=True)
     comision = models.ManyToManyField(Contacto,through='Comision')
 
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("nombre__icontains",)
+
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.nombre)
 
@@ -156,6 +164,6 @@ class Comision(models.Model):
 
     class Meta:
         db_table = "comision_junta"
-        verbose_name = "comision"
+        verbose_name = "comisionamiento"
         verbose_name_plural = "comisiones"
         permissions = (('view_comision','Can view comision'),)

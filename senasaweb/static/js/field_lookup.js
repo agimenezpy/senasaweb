@@ -1,47 +1,16 @@
 last_values = {}
-function prepare_lookup() {
-    var map = null;
-    if (this['geodjango_geom'])
-        map = this['geodjango_geom'].map
-    if (this['geodjango_ubicacion'])
-        map = this['geodjango_ubicacion'].map
-    dojo.query(".vForeignKeyRawIdAdminField").forEach(
-        function(node, index, nodeList) {
-            field_name = node.id.split("_")[1];
-            dojo.connect(node, "onblur", {"node": node, "map" : map, "field_name" : field_name}, handle_lookup);
-            dojo.connect(node, "onfocus", {"node": node, "map" : map, "field_name" : field_name}, handle_lookup);
-        }
-    )
-    if (map) {
-        dojo.connect(dojo.byId("centerPanel"),"scroll",map,function(obj){map.updateSize()})
-        dojo.connect(dojo.byId("ubicacion"),"scroll",map,function(obj){map.updateSize()})
-    }
-}
-
-function handle_lookup() {
-    var map = this.map;
-    var field_name = this.field_name;
-    var value = this.node.value;
+function handle_lookup(evt) {
+    var $ = evt.data.jquery;
+    var map = evt.data.map;
+    var input_field = evt.data.target;
+    var field_name = input_field.name;
+    var value = input_field.value;
     if (value.trim().length == 0 || value == last_values[field_name])
         return;
     last_values[field_name] = value;
     dojo.block("container");
-    dojo.xhr.get({
-        url: window.__prefix__ + "/lookup/" + field_name + "/" + value,
-        handleAs: "json",
-        load: function(data, ioArgs) {
+    $.getJSON(window.__prefix__ + "/lookup/" + field_name + "/" + value,function(data, ioArgs) {
             dojo.unblock("container");
-            if (data.items.length == 0) {
-                var lbl = dojo.query(".field-" + field_name + " strong").empty();
-                if (lbl.length != 0) {
-                    lbl.empty();
-                    lbl.innerHTML("Valor no econtrado");
-                }
-                else {
-                    dojo.query(".field-" + field_name + " a").after("<strong>Valor no econtrado</strong>");
-                }
-                return;
-            }
             var itm = data.items[0]
             if (map && field_name.match("localidad|departamento|distrito")) {
                 prj = new OpenLayers.Projection("EPSG:4326");
@@ -52,27 +21,10 @@ function handle_lookup() {
                 bb.transform(prj,map.getProjectionObject());
                 map.zoomToExtent(bb);
             }
-            var lbl = dojo.query(".field-" + field_name + " strong");
-            if (lbl.length != 0) {
-                lbl.empty();
-                lbl.innerHTML(itm[data.label]);
-            }
-            else {
-                dojo.query(".field-" + field_name + " a").after("<strong>"+itm[data.label]+"</strong>");
-            }
         },
-        error : function(err, ioArgs) {
+        function(err, ioArgs) {
             dojo.unblock("container");
-            var lbl = dojo.query(".field-" + field_name + " strong");
-            if (lbl.length != 0) {
-                lbl.empty();
-                lbl.innerHTML("Valor no econtrado");
-            }
-            else {
-                dojo.query(".field-" + field_name + " a").after("<strong>Valor no econtrado</strong>");
-            }
-        }
-    })
+    });
 }
 
 function dismissRelatedLookupPopup(win, chosenId) {
@@ -83,6 +35,13 @@ function dismissRelatedLookupPopup(win, chosenId) {
     } else {
         document.getElementById(name).value = chosenId;
     }
-    elem.focus()
+    elem.focus();
     win.close();
+}
+
+function removeRelatedObject(triggeringLink) {
+    var id = triggeringLink.id.replace(/^remove_/, '');
+    var elem = document.getElementById(id);
+    elem.value = "";
+    elem.focus();
 }

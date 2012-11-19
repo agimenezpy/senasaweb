@@ -22,7 +22,7 @@ class MyGeoModelAdmin(gisadmin.GeoModelAdmin):
     map_srid = spherical_mercator_srid
     max_extent = '-20037508,-20037508,20037508,20037508'
     max_resolution = '156543.0339'
-    point_zoom = num_zoom - 6
+    point_zoom = 14
     default_zoom = 7
     default_lon = -6395183.6125250775000000
     default_lat = -2664167.8687612307000000

@@ -53,6 +53,10 @@ class LocalidadAdmin(GeoModelAdmin):
     )
     raw_id_fields = ('distrito',)
 
+    autocomplete_lookup_fields = {
+        'fk' : ['distrito']
+    }
+
     def distrito_nombre(self,obj):
         return obj.distrito.nombre
     distrito_nombre.admin_order_field = 'distrito'

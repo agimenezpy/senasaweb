@@ -42,6 +42,10 @@ class Distrito(gismodels.Model):
     departamento = models.ForeignKey(Departamento, verbose_name="departamento",to_field="codigo",on_delete=models.PROTECT)
     objects = gismodels.GeoManager()
 
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("nombre__icontains",)
+
     def get_extent(self):
         wgs84 = SpatialReference('EPSG:4326')
         return self.geom.transform(wgs84,clone=True).extent
@@ -70,6 +74,10 @@ class Localidad(gismodels.Model):
     geom = gismodels.PolygonField(u"ubicación geográfica",srid=32721)
     distrito = models.ForeignKey(Distrito, verbose_name="distrito",to_field="codigo",on_delete=models.PROTECT)
     objects = gismodels.GeoManager()
+
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("nombre__icontains",)
 
     def get_extent(self):
         wgs84 = SpatialReference('EPSG:4326')

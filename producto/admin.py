@@ -25,6 +25,14 @@ class ComisionInline(admin.TabularInline):
     raw_id_fields = ('contacto',)
     extra = 0
 
+    autocomplete_lookup_fields = {
+        'fk' : ['contacto']
+    }
+
+    related_lookup_fields = {
+        'fk' : ['contacto']
+    }
+
 class ObraAdmin(GeoModelAdmin):
     list_display = ('codigo','distrito','locacion','proceso','porcentaje','inicio','fin','estado','producto','grupo')
     list_per_page = settings.LIST_PER_PAGE
@@ -58,6 +66,14 @@ class ObraAdmin(GeoModelAdmin):
             'fields' : ('distrito','localidad','locacion','coordenada_x','coordenada_y','ubicacion')
         })
     )
+
+    autocomplete_lookup_fields = {
+        'fk' : ['distrito','junta','localidad']
+    }
+
+    related_lookup_fields = {
+        'fk' : ['grupo']
+    }
 
     def queryset(self, request):
         qs = super(ObraAdmin, self).queryset(request)
@@ -189,6 +205,14 @@ class JuntaAdmin(ModelAdmin):
     list_select_related = True
     inlines = (ComisionInline,)
     raw_id_fields = ('distrito',)
+
+    autocomplete_lookup_fields = {
+        'fk' : ['distrito']
+    }
+
+    related_lookup_fields = {
+        'fk' : ['distrito']
+    }
 
 
 admin.site.register(Obra, ObraAdmin)

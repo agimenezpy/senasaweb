@@ -27,7 +27,7 @@
 {% endif %}
 {% block content_title %}{% endblock %}
 {% block content %}<div id="content-main" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="gutters: 'false'" style="height: 100%; width: 100%">
-<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top'"><h1>{% if title %}<h1>{{ title }}</h1>{% endif %}</h1>
+<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top'">{% if title %}<h1>{{ title }}</h1>{% endif %}
 {% block object-tools %}
 {% if change %}{% if not is_popup %}
   <ul class="object-tools">
