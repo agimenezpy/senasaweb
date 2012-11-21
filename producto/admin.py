@@ -53,7 +53,7 @@ class ObraAdmin(GeoModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields' : ('grupo','producto','cantidad','poblacion','tipo_poblacion','propietario','fecha_inicio')
+            'fields' : ('grupo','producto','cantidad','poblacion','conexion','tipo_poblacion','propietario','fecha_inicio')
         }),
         (u"Seguimiento", {
             'fields' : ('inicio','fin','proceso','porcentaje','estado')

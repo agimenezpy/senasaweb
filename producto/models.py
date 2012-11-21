@@ -96,7 +96,11 @@ class Contacto(models.Model):
 
     @staticmethod
     def autocomplete_search_fields():
-        return ("nombre__icontains","apellido__icontains")
+        return ("nombres__icontains","apellidos__icontains")
+
+    @property
+    def id(self):
+        return self.cedula
 
     def __unicode__(self):
         return u"[%d] %s %s" % (self.cedula, self.nombres, self.apellidos)
@@ -155,7 +159,7 @@ class Junta(models.Model):
 
 class Comision(models.Model):
     contacto = models.ForeignKey(Contacto,verbose_name="contacto")
-    junta = models.ForeignKey(Junta,verbose_name="junta de saneamiento",related_name="+")
+    junta = models.ForeignKey(Junta,verbose_name="junta de saneamiento",related_name="comisiones")
     cargo = models.ForeignKey(Tipo, verbose_name=u"tipo de población",related_name="+",
         limit_choices_to={'categoria__exact' : Tipo.TIPO_CARGO},on_delete=models.PROTECT)
 
@@ -167,3 +171,23 @@ class Comision(models.Model):
         verbose_name = "comisionamiento"
         verbose_name_plural = "comisiones"
         permissions = (('view_comision','Can view comision'),)
+
+class LocacionManager(models.Manager):
+    def get_query_set(self):
+        return super(LocacionManager, self).get_query_set()\
+                    .only("locacion")\
+                    .order_by("locacion")\
+                    .distinct("locacion")
+
+class Locacion(Obra):
+    objects = LocacionManager()
+
+    def related_label(self):
+        return self.locacion
+
+    @staticmethod
+    def autocomplete_search_fields():
+        return ("locacion__icontains",)
+
+    class Meta:
+        proxy = True

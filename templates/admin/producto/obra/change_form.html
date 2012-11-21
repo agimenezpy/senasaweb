@@ -95,4 +95,36 @@
 {% prepopulated_fields_js %}
 
 </form></div>
+<style type="text/css">
+    #id_locacion .ui-autocomplete-loading {
+        background: white url({%  static 'grappelli/images/backgrounds/loading-small.gif' %}) right center no-repeat;
+    }
+</style>
+<script type="text/javascript">
+(function($) {
+    $( "#id_locacion" ).autocomplete({
+        source: function( request, response ) {
+            $.ajax({
+                url: "{% url 'grp_autocomplete_lookup' %}",
+                dataType: "json",
+                data: {
+                    app_label: "producto",
+                    model_name: "locacion",
+                    term: request.term
+                },
+                success: function( data ) {
+                    response($.map(data,function(item) {return {label:$.trim(item.label), value:$.trim(item.label)} }));
+                }
+            });
+        },
+        minLength: 4,
+        open: function() {
+            $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+        },
+        close: function() {
+            $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+        }
+    });
+})(grp.jQuery);
+</script>
 {% endblock %}

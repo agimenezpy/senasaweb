@@ -49,7 +49,7 @@ def related_lookup(request):
             model_name = request.GET.get('model_name')
             if object_id:
                 try:
-                    key = "codigo" if mcod.match(model_name) else "id"
+                    key = "codigo" if mcod.match(model_name) else "pk"
                     filtro = {key: object_id}
                     model = models.get_model(app_label, model_name)
                     obj = model.objects.get(**filtro)
@@ -72,7 +72,7 @@ def autocomplete_lookup(request):
             model_name = request.GET.get('model_name')
             model = models.get_model(app_label, model_name)
             filters = {}
-            key = "codigo" if mcod.match(model_name) else "id"
+            key = "codigo" if mcod.match(model_name) else "pk"
             # FILTER
             if request.GET.get('query_string', None):
                 for item in request.GET.get('query_string').split("&"):
@@ -85,7 +85,10 @@ def autocomplete_lookup(request):
                 search_qs = QuerySet(model)
                 search_qs.dup_select_related(qs)
                 search_qs = search_qs.filter(reduce(operator.or_, search))
-                qs = qs & search_qs
+                if model_name == "locacion":
+                    qs = qs.filter(reduce(operator.or_, search))
+                else:
+                    qs = qs & search_qs
             data = [{"value":getattr(f,key),"label":get_label(f)} for f in qs[:AUTOCOMPLETE_LIMIT]]
             label = ungettext(
                 '%(counter)s result',

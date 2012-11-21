@@ -1,4 +1,5 @@
-{% load i18n admin_static admin_modify navigation %}
+{% load i18n admin_static admin_modify navigation grp_tags %}
+{% load url from future %}
 <div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
   <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
 {{ inline_admin_formset.formset.management_form }}
@@ -74,6 +75,24 @@
 (function($) {
     $(document).ready(function($) {
         var rows = "#{{ inline_admin_formset.formset.prefix }}-group .tabular.inline-related tbody tr";
+        var prefix = "{{ inline_admin_formset.formset.prefix }}";
+        var related_lookup_fields_fk = {% get_related_lookup_fields_fk inline_admin_formset.opts %};
+        var autocomplete_fields_fk = {% get_autocomplete_lookup_fields_fk inline_admin_formset.opts %};
+        $.each(related_lookup_fields_fk, function() {
+            grp.jQuery("#{{ inline_admin_formset.formset.prefix }}-group .tabular.inline-related tbody tr:not(.empty-form)")
+                    .find("input[name^='" + prefix + "'][name$='" + this + "']")
+                    .grp_related_fk({lookup_url:"{% url 'grp_related_lookup' %}"});
+        });
+        $.each(autocomplete_fields_fk, function() {
+            $("#{{ inline_admin_formset.formset.prefix }}-group .tabular.inline-related tbody tr:not(.empty-form)")
+                    .find("input[name^='" + prefix + "'][name$='" + this + "']")
+                    .each(function() {
+                        grp.jQuery(this).grp_autocomplete_fk({
+                            lookup_url:"{% url 'grp_related_lookup' %}",
+                            autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
+                        });
+                    });
+        });
         var alternatingRows = function(row) {
             $(rows).not(".add-row").removeClass("row1 row2")
                 .filter(":even").addClass("row1").end()
@@ -123,9 +142,25 @@
             emptyCssClass: "empty-form",
             removed: alternatingRows,
             added: (function(row) {
+                form = grp.jQuery(row[0]);
                 initPrepopulatedFields(row);
-                reinitDateTimeShortCuts();
-                updateSelectFilter();
+                //reinitDateTimeShortCuts();
+                //updateSelectFilter();
+                grappelli.reinitDateTimeFields(form);
+                grappelli.updateSelectFilter(form);
+                $.each(related_lookup_fields_fk, function() {
+                    form.find("input[name^='" + prefix + "'][name$='" + this + "']")
+                            .grp_related_fk({lookup_url:"{% url 'grp_related_lookup' %}"});
+                });
+                $.each(autocomplete_fields_fk, function() {
+                    form.find("input[name^='" + prefix + "'][name$='" + this + "']")
+                            .each(function() {
+                                grp.jQuery(this).grp_autocomplete_fk({
+                                    lookup_url:"{% url 'grp_related_lookup' %}",
+                                    autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
+                                });
+                            });
+                });
                 alternatingRows(row);
             })
         });
