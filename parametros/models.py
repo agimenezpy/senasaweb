@@ -174,8 +174,9 @@ class Tipo(models.Model):
      TIPO_ORGANIZACION,
      TIPO_PRODUCTO,
      TIPO_POBLACION,
-     TIPO_CARGO
-        ) = ("SJS","PRO","ORG","PRD","POB","CRG")
+     TIPO_CARGO,
+     TIPO_GRMI
+        ) = ("SJS","PRO","ORG","PRD","POB","CRG","GRM")
     etiqueta = models.CharField(u"etiqueta",max_length=50)
     orden = models.SmallIntegerField(u"secuencia")
     categoria = models.ForeignKey(Categoria, verbose_name=u"categoría",on_delete=models.PROTECT)

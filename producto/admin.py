@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.gis.geos import Point
 from django.conf import settings
 from producto.models import *
-from producto.forms import ObraForm
+from producto.forms import ObraForm,JuntaForm
 from senasaweb.admin import MyGeoModelAdmin as GeoModelAdmin,MyModelAdmin as ModelAdmin
 from producto.exporter import export_obras_xls,export_obras_pdf
 from functools import update_wrapper
@@ -20,8 +20,8 @@ class ComentarioInline(admin.TabularInline):
     extra = 0
     readonly_fields = ('fecha_insercion','fecha_actualizacion','autor')
 
-class ComisionInline(admin.TabularInline):
-    model = Comision
+class MiembroInline(admin.TabularInline):
+    model = Miembro
     raw_id_fields = ('contacto',)
     extra = 0
 
@@ -192,7 +192,6 @@ class ContactoAdmin(ModelAdmin):
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombres','apellidos')
     list_select_related = True
-    inlines = (ComentarioInline,)
 
     def save_model(self, request, obj, form, change):
         obj.modifica = request.user
@@ -203,17 +202,13 @@ class JuntaAdmin(ModelAdmin):
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
     list_select_related = True
-    inlines = (ComisionInline,)
-    raw_id_fields = ('distrito',)
+    inlines = (MiembroInline,ComentarioInline)
+    raw_id_fields = ('distrito','localidad',)
+    form = JuntaForm
 
     autocomplete_lookup_fields = {
-        'fk' : ['distrito']
+        'fk' : ['distrito','localidad']
     }
-
-    related_lookup_fields = {
-        'fk' : ['distrito']
-    }
-
 
 admin.site.register(Obra, ObraAdmin)
 admin.site.register(Contacto, ContactoAdmin)

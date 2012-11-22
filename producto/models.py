@@ -116,7 +116,7 @@ class Comentario(models.Model):
     fecha_insercion = models.DateTimeField("insertado")
     fecha_actualizacion = models.DateTimeField("actualizado")
     autor = models.ForeignKey(User, verbose_name="autor",on_delete=models.PROTECT,related_name="+")
-    contacto = models.ForeignKey(Contacto, verbose_name="contacto",on_delete=models.CASCADE)
+    junta = models.ForeignKey('Junta', verbose_name="junta",on_delete=models.CASCADE)
 
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.descripcion)
@@ -141,8 +141,12 @@ class Junta(models.Model):
     telefono = models.CharField(u"teléfono", max_length=15,validators=[RegexValidator("^09[6789]\d{7,7}$")],
         help_text=u"Introduzca el número de telefono. Ej 0981321123",null=True,blank=True)
     distrito = models.ForeignKey(Distrito, verbose_name="distrito",to_field="codigo",on_delete=models.PROTECT)
-    fecha_asamblea = models.DateField("fecha constitutiva",null=True,blank=True)
-    comision = models.ManyToManyField(Contacto,through='Comision')
+    localidad = models.ForeignKey(Localidad, verbose_name="localidad",to_field="codigo",on_delete=models.PROTECT,null=True,blank=True)
+    proyecto = models.ManyToManyField(Proyecto,verbose_name="Proyectos",blank=True)
+    fecha_asamblea = models.DateField("fecha de asamblea constitutiva",null=True,blank=True)
+    fecha_habilita = models.DateField(u"fecha de habilitación",null=True,blank=True)
+    fecha_ignagura = models.DateField(u"fecha de ignaguración",null=True,blank=True)
+    miembro = models.ManyToManyField(Contacto,through='Miembro')
 
     @staticmethod
     def autocomplete_search_fields():
@@ -157,20 +161,34 @@ class Junta(models.Model):
         verbose_name_plural = "juntas de saneamiento"
         permissions = (('view_junta','Can view junta'),)
 
-class Comision(models.Model):
+class Miembro(models.Model):
+    TIPO_CARGO = ((1,"Presidente"),
+                  (2,"Vice Presidente"),
+                  (3,"Secretario/a"),
+                  (4,"Tesorero/a"),
+                  (5,"Vocal"),
+                  (6,"Sindico Titular"),
+                  (7,"Sindico Suplente"),
+                  (8,"Vocal Titular"),
+                  (9,"Vocal Suplente"))
+    TIPO_GRUPO = ((1,"COMISION DIRECTIVA"),
+                  (2,"SINDICATURA"),
+                  (3,"T.E.I."))
     contacto = models.ForeignKey(Contacto,verbose_name="contacto")
-    junta = models.ForeignKey(Junta,verbose_name="junta de saneamiento",related_name="comisiones")
-    cargo = models.ForeignKey(Tipo, verbose_name=u"tipo de población",related_name="+",
-        limit_choices_to={'categoria__exact' : Tipo.TIPO_CARGO},on_delete=models.PROTECT)
+    junta = models.ForeignKey(Junta,verbose_name="junta de saneamiento",related_name="comision_set")
+    cargo = models.IntegerField("cargo", choices=TIPO_CARGO)
+    grupo = models.IntegerField("grupo", choices=TIPO_GRUPO)
 
     def __unicode__(self):
-        return u"[%d y %d] %s" % (self.contacto_id, self.junta_id, self.cargo.etiqueta)
+        return u"[%d,%d] %s - %s" % (self.contacto_id, self.junta_id,
+                                     self.TIPO_CARGO[self.cargo-1][1], self.TIPO_GRUPO[self.grupo-1][1])
 
     class Meta:
-        db_table = "comision_junta"
-        verbose_name = "comisionamiento"
-        verbose_name_plural = "comisiones"
-        permissions = (('view_comision','Can view comision'),)
+        db_table = "miembro_junta"
+        verbose_name = "miembro de junta"
+        verbose_name_plural = "miembros de junta"
+        unique_together = ('junta','contacto')
+        permissions = (('view_miembrojunta','Can view miembro junta'),)
 
 class LocacionManager(models.Manager):
     def get_query_set(self):

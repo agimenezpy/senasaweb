@@ -5,7 +5,7 @@ function handle_lookup(evt) {
     var input_field = evt.data.target;
     var field_name = input_field.name;
     var value = input_field.value;
-    if (value.trim().length == 0 || value == last_values[field_name])
+    if (!map || value.trim().length == 0 || value == last_values[field_name])
         return;
     last_values[field_name] = value;
     dojo.block("container");
