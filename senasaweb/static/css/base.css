@@ -53,24 +53,27 @@ ul {padding: 0px;}
 }
 
 /* Seccion de la pagina principal del mapa */
-.hmap {background-color: rgb(78,139,184);height: 62px;}
+.hmap {background-color: rgb(78,139,184);height: 62px; position: absolute; right: 250px; top:0px; left:0px;}
 #map { position:absolute; top:63px; bottom:0; left: 0px; right: 250px; z-index: 0 }
-.contentmap {top:63px; right: 0px; bottom: 0px; width: 209px;padding: 10px; background-color: rgba(255,255,255,0.9);position:absolute}
+.contentmap {top:0px; right: 0px; bottom: 0px; width: 209px;padding: 10px; background-color: rgba(255,255,255,0.9);position:absolute; overflow-y: auto}
 .contentmap h2 {color: #ccccff}
 .contentmap ul li {list-style-type: none}
 .mmg {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     z-index: 3;
     position: absolute;
     cursor: pointer;
     pointer-events:all;
+    background-image: url(../img/markers.png);
 }
-.mmg-blue { background: url(../img/blue.png) no-repeat left bottom; }
-.mmg-lila { background: url(../img/lila.png) no-repeat left bottom; }
-.mmg-green { background: url(../img/green.png) no-repeat left bottom; }
-.mmg-yellow { background: url(../img/yellow.png) no-repeat left bottom; }
-.mmg-black { background: url(../img/black.png) no-repeat left bottom; }
-.mmg-white { background: url(../img/white.png) no-repeat left bottom; }
-.mmg-default { background: url(../img/red.png) no-repeat left bottom; }
-.mmg-orange { background: url(../img/orange.png) no-repeat left bottom; }
+.mmg-black { background-position: 0px 0px; }
+.mmg-blue { background-position: -17px 0px; }
+.mmg-green { background-position: -34px 0px; }
+.mmg-purple { background-position: -51px 0px; }
+.mmg-orange { background-position: -68px 0px; }
+.mmg-red { background-position: -85px 0px; }
+.mmg-white { background-position: -102px 0px; }
+.mmg-yellow { background-position: -119px 0px; }
+.mmg-brown { background-position: -136px 0px; }
+.mmg-default { background-position: -85px 0px; }

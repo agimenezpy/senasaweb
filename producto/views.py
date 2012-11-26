@@ -15,7 +15,7 @@ from re import compile
 
 wgs84 = SpatialReference("EPSG:4326")
 FEAT_TMPL = "{type:'Feature',geometry:{type:'Point',coordinates:[%.4f,%.4f]},properties:{%s}}"
-ICONS = {11:"blue",12:"orange",13:"orange",14:"green"}
+#ICONS = {11:"blue",12:"orange",13:"orange",14:"green"}
 ext = compile("\(|\)")
 
 def index(request):
@@ -72,8 +72,7 @@ def obras(request):
 def get_iconos():
     if cache.has_key("iconos"):
         return cache.get("iconos")
-    iconos = reduce(lambda i,v: i + u"," + v, map(lambda it: u'"%s" : "%s"' % (it.etiqueta, ICONS[it.id]),
-        filter( lambda i: ICONS.has_key(i.id), Tipo.objects.only("id","etiqueta").filter(categoria__exact="PRD"))))
+    iconos = reduce(lambda i,v: i + u"," + v, map(lambda it: u'"%s" : "%s"' % (it.etiqueta, it.color if it.color is not None else 'default'), Tipo.objects.filter(categoria__exact="PRD")))
     cache.set("iconos",iconos)
     return iconos
 

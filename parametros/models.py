@@ -118,7 +118,7 @@ class Proyecto(models.Model):
         permissions = (('view_proyecto','Can view proyecto'),)
 
 class Grupo(models.Model):
-    codigo = models.CharField(u"código",max_length=30,unique=True)
+    codigo = models.CharField(u"código",max_length=30,unique=True,editable=False)
     descripcion = models.TextField(u"descripción",max_length=200,help_text="Resumen descriptivo del grupo")
     llamado = models.IntegerField("identificador de llamado",null=True,blank=True)
     proyecto = models.ForeignKey(Proyecto, verbose_name=u"proyecto de inversión",on_delete=models.PROTECT)
@@ -128,9 +128,15 @@ class Grupo(models.Model):
 
     def save(self, *args, **kwargs):
         if self.codigo is None or len(self.codigo) == 0:
-            self.codigo = "%s%02d" % (self.proyecto.codigo,
-                                      Grupo.objects.filter(proyecto_id__exact=self.proyecto_id)
-                                      .aggregate(models.Count("codigo"))["codigo__count"] + 1)
+            qty = Grupo.objects.raw("SELECT 0 as id,MAX(cast(substring(codigo from '[0-9]+') as int)) as secuencia__max FROM " +
+                                        self._meta.db_table
+                                        + " WHERE proyecto_id = %s",
+                [self.proyecto_id])[0].secuencia__max
+            if qty is None:
+                qty = 0
+            else:
+                qty += 1
+            self.codigo = "%s%02d" % (self.proyecto.codigo,qty)
         super(Grupo, self).save(*args, **kwargs)
 
     class Meta:
@@ -177,9 +183,17 @@ class Tipo(models.Model):
      TIPO_CARGO,
      TIPO_GRMI
         ) = ("SJS","PRO","ORG","PRD","POB","CRG","GRM")
+    COLORES = (("black","Negro"),("blue","Azul"),("green","Verde"),("purple","Lila"),("orange","Naranja"),
+               ("red","Rojo"),("white","Blanco"),("yellow","Amarillo"),("brown","Marron"))
     etiqueta = models.CharField(u"etiqueta",max_length=50)
     orden = models.SmallIntegerField(u"secuencia")
     categoria = models.ForeignKey(Categoria, verbose_name=u"categoría",on_delete=models.PROTECT)
+    color = models.CharField("color",max_length=10,null=True,blank=True,choices=COLORES)
+
+    def save(self, force_insert=False, force_update=False, using=None):
+        if self.categoria_id != "PRD":
+            self.color = None
+        super(Tipo, self).save(force_insert,force_update,using)
 
     def __unicode__(self):
         return u"[%d] %s - %s " % (self.id, self.etiqueta, self.categoria_id)

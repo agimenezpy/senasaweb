@@ -77,6 +77,29 @@
 {# JavaScript for prepopulated fields #}
 {% prepopulated_fields_js %}
 
+<script type="text/javascript">
+(function($){
+    var frm = $("#tipo_form")
+    if (frm.length) {
+        if ($("#id_categoria")[0].value != "PRD") {
+            $(".field-color").hide();
+        }
+        $("#id_categoria").change(function(ev) {
+            var v = ev.target.value;
+            if (v != "PRD")
+                $(".field-color").hide();
+            else
+                $(".field-color").show();
+        });
+        $("#id_color input").each(function(idx,obj) {
+            if (obj.value != "")
+                $(obj).parent().prepend("<div class='mmg mmg-"+ ((obj.value) ? obj.value : "default") +"' style='display: inline; margin-left: -20px;'/>")
+        })
+
+    }
+})(grp.jQuery)
+</script>
+
 </div>
 </form></div>
 {% endblock %}

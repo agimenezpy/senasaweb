@@ -120,6 +120,7 @@ class TipoAdmin(ModelAdmin):
     list_per_page = settings.LIST_PER_PAGE
     list_filter = ('categoria__nombre',)
     list_select_related = True
+    radio_fields = {"color":admin.VERTICAL}
 
 class CategoriaAdmin(ModelAdmin):
     list_display = ('codigo','nombre')

@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 {% load url from future %}
 {% if not is_popup and app_list  %}
     <div id="navigation" data-dojo-type="dijit.layout.AccordionContainer" data-dojo-props="region: 'left', minSize: 100, splitter: true">
@@ -26,6 +26,10 @@
                 <li>
                     <span style="width:16px;height: 16px;" class="dijitIconApplication">&nbsp;&nbsp;&nbsp;&nbsp;</span>
                     <a href="{% url 'admin:producto_obra_export' %}">Exportar {{ model.name }}</a>
+                    </li>
+                <li>
+                    <img src="{% static 'img/globe.png' %}"/>
+                    <a href="{% url 'home' %}" target="_blank">Ver Mapa de {{ model.name }}</a>
                 </li>
                 {% else %}
                 <li>

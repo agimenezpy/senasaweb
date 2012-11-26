@@ -7,12 +7,14 @@
 {% get_static_prefix as STATIC_PREFIX %}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/gritter/css/jquery.gritter.css' %}" />
     <link rel="stylesheet" type="text/css" href="{{ STATIC_PREFIX }}css/{{ theme }}/jquery-ui.custom.css" />
     <link rel="stylesheet" type="text/css" href="http://api.tiles.mapbox.com/mapbox.js/v0.6.6/mapbox.css" />
 </head>
 <body>
     <script type="text/javascript" src="{% static 'js/jquery.min.js' %}" ></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}" ></script>
+    <script type="text/javascript" src="{% static 'js/jquery.blockUI.js' %}" ></script>
     <script type="text/javascript" src="http://api.tiles.mapbox.com/mapbox.js/v0.6.6/mapbox.js" ></script>
     <script type="text/javascript" src="{% static 'js/script.js' %}" ></script>
     <div class='hmap'><div id="header"><div id="branding"><h1>Obras de Saneamiento</h1></div></div></div>
@@ -48,6 +50,9 @@
     </div>
     <script type="text/javascript">
         var ICONS = {{ iconos|safe }}
+        $(document).ajaxStart($.blockUI({ message: '<img src="{% static 'img/loading.gif' %}" />&nbsp;<h2>Cargando Obras ...</h2>',
+                                        css: {border: '0px', background:'#ffffff'}}))
+                   .ajaxStop($.unblockUI);
         var main = Map('map',{
             api: "{{ MAP }}",
             center: {lat: {{ center_y }}, lon: {{ center_x }}, zoom: {{ zoom }} },
@@ -66,7 +71,7 @@
         main.markers();
         $.each(ICONS, function(key, val) {
             var img = '<div class="mmg mmg-' + val + '"></div>';
-            var lbl = '<label style="padding-left: 15px;">' + key + '</label>';
+            var lbl = '<label style="padding-left: 18px;">' + key + '</label>';
             $(".map-legend").append('<div style="padding-top: 10px">'+img + lbl +'</div>')
         });
         {% with pri=grupos.keys|first sec=grupos.keys|slice:":2" %}
