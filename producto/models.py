@@ -136,7 +136,7 @@ class Comentario(models.Model):
         permissions = (('view_comentario','Can view comentario'),)
 
 class Junta(models.Model):
-    nombre = models.CharField("nombre",max_length=80)
+    nombre = models.CharField("nombre de junta",max_length=80)
     direccion = models.CharField("direccion",null=True,blank=True,max_length=100)
     telefono = models.CharField(u"teléfono", max_length=15,validators=[RegexValidator("^09[6789]\d{7,7}$")],
         help_text=u"Introduzca el número de telefono. Ej 0981321123",null=True,blank=True)
@@ -146,6 +146,7 @@ class Junta(models.Model):
     fecha_asamblea = models.DateField("fecha de asamblea constitutiva",null=True,blank=True)
     fecha_habilita = models.DateField(u"fecha de habilitación",null=True,blank=True)
     fecha_ignagura = models.DateField(u"fecha de ignaguración",null=True,blank=True)
+    personeria = models.IntegerField(u"Personería Jurídica Nro",null=True,blank=True)
     miembro = models.ManyToManyField(Contacto,through='Miembro')
 
     @staticmethod
