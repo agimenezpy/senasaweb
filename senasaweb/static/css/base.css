@@ -55,7 +55,7 @@ ul {padding: 0px;}
 /* Seccion de la pagina principal del mapa */
 .hmap {background-color: rgb(78,139,184);height: 62px; position: absolute; right: 250px; top:0px; left:0px;}
 #map { position:absolute; top:63px; bottom:0; left: 0px; right: 250px; z-index: 0 }
-.contentmap {top:0px; right: 0px; bottom: 0px; width: 209px;padding: 10px; background-color: rgba(255,255,255,0.9);position:absolute; overflow-y: auto}
+.contentmap {top:0px; right: 0px; bottom: 0px; width: 240px;padding: 5px; background-color: rgba(255,255,255,0.9);position:absolute; overflow-y: auto}
 .contentmap h2 {color: #ccccff}
 .contentmap ul li {list-style-type: none}
 .mmg {
@@ -77,4 +77,25 @@ ul {padding: 0px;}
 .mmg-yellow { background-position: -119px 0px; }
 .mmg-brown { background-position: -136px 0px; }
 .mmg-default { background-position: -85px 0px; }
-.legend-link { font-size: small; margin: 10px;}
+
+/* Animation */
+
+.map-tile-loaded {
+    -webkit-animation-name:               fade-in;
+    -moz-animation-name:                  fade-in;
+    -ms-animation-name:                   fade-in;
+    -o-animation-name:                    fade-in;
+    -webkit-animation-timing-function:    linear;
+    -moz-animation-timing-function:       linear;
+    -ms-animation-timing-function:        linear;
+    -o-animation-timing-function:         linear;
+    -webkit-animation-duration:           .2s;
+    -moz-animation-duration:              .2s;
+    -ms-animation-duration:               .2s;
+    -o-animation-duration:                .2s;
+}
+
+@-webkit-keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@-moz-keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@-ms-keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@-o-keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
