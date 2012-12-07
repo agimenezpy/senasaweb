@@ -9,6 +9,7 @@ from producto.exporter import export_obras_xls,export_obras_pdf
 from functools import update_wrapper
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.admin.util import unquote
 
 class EstadoInline(admin.TabularInline):
     model = Estado
@@ -49,7 +50,6 @@ class ObraAdmin(GeoModelAdmin):
     def __init__(self,model,admin_site):
         super(ObraAdmin, self).__init__(model,admin_site)
         self.listAdmin = ObraListAdmin(model,admin_site)
-        self.listAdmin.view = True
 
     fieldsets = (
         (None, {
@@ -124,9 +124,14 @@ class ObraAdmin(GeoModelAdmin):
 
     def list_view(self, request, object_id, form_url='', extra_context=None):
         opts = self.model._meta
-        return HttpResponseRedirect(reverse('admin:%s_%s_change' %
-                                            (opts.app_label, opts.module_name), args=(object_id,),
-            current_app=self.admin_site.name))
+
+        obj = self.listAdmin.get_object(request, unquote(object_id))
+        if not self.has_change_permission(request, obj):
+            return self.listAdmin.change_view(request, object_id, form_url, extra_context)
+        else:
+            return HttpResponseRedirect(reverse('admin:%s_%s_change' %
+                                                (opts.app_label, opts.module_name), args=(object_id,),
+                current_app=self.admin_site.name))
 
     def has_change_permission(self, request, obj=None):
         # Esto se implementa asi porque siempre desde el changelist_view se envia obj=None pero en otra invocacion no
@@ -145,13 +150,33 @@ class ObraAdmin(GeoModelAdmin):
             else:
                 return chPerm
 
-class ObraListAdmin(ModelAdmin):
+class ObraListAdmin(GeoModelAdmin):
     list_display = ('codigo','distrito','georeferencia','locacion','fmt_finicio','proceso','progreso','fmt_inicio','fmt_fin','producto','grupo')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('producto__etiqueta','codigo','locacion')
     list_filter = ('grupo__proyecto__nombre','distrito__departamento__nombre')
     list_select_related = True
     actions = [export_obras_xls,export_obras_pdf]
+
+    fieldsets = (
+        (None, {
+            'fields' : ('grupo','producto','cantidad','poblacion','conexion','tipo_poblacion','propietario','fecha_inicio')
+        }),
+        (u"Seguimiento", {
+            'fields' : ('inicio','fin','proceso','porcentaje','estado')
+        }),
+        (u"Junta de Saneamiento", {
+            'fields' : ('organizacion','tipo_junta','junta')
+        }),
+        (u"Ubicación", {
+            'classes' : ('tab',),
+            'fields' : ('distrito','localidad','locacion','coordenada_x','coordenada_y','ubicacion')
+        })
+    )
+
+    def __init__(self,model,admin_site):
+        super(ObraListAdmin, self).__init__(model,admin_site)
+        self.view = True
 
     def progreso(self,obj):
         return '<div data-dojo-type="dijit.ProgressBar" style="width:80px" data-dojo-id="myProgressBar%d" id="progress%d" data-dojo-props="value:%d"></div>' \
@@ -186,16 +211,19 @@ class ObraListAdmin(ModelAdmin):
     def export(self, request, extra_context=None):
         return export_obras_xls(self,request,None)
 
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        tmp = super(ObraListAdmin,self).change_view(request, object_id, form_url, extra_context)
+        if hasattr(tmp, 'context_data'):
+            tmp.context_data.update({'change':False,'title':u"Detalle de %s" % self.model._meta.verbose_name,
+                                     'has_change_permission':False})
+        return tmp
+
 class ContactoAdmin(ModelAdmin):
     list_display = ('cedula', 'nombres', 'apellidos', 'telefono_celular')
     list_display_links = ('cedula',)
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombres','apellidos')
     list_select_related = True
-
-    def save_model(self, request, obj, form, change):
-        obj.modifica = request.user
-        super(ContactoAdmin, self).save_model(request, obj, form, change)
 
 class JuntaAdmin(ModelAdmin):
     list_display = ('nombre','distrito','telefono')
@@ -209,6 +237,10 @@ class JuntaAdmin(ModelAdmin):
     autocomplete_lookup_fields = {
         'fk' : ['distrito','localidad']
     }
+
+    def save_model(self, request, obj, form, change):
+        obj.modifica = request.user
+        super(JuntaAdmin, self).save_model(request, obj, form, change)
 
 admin.site.register(Obra, ObraAdmin)
 admin.site.register(Contacto, ContactoAdmin)

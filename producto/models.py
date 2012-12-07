@@ -122,7 +122,7 @@ class Comentario(models.Model):
         return u"[%d] %s" % (self.id, self.descripcion)
 
     def save(self, force_insert=False, force_update=False, using=None):
-        self.autor = self.contacto.modifica
+        self.autor = self.junta.modifica
         ahora = datetime.now()
         if getattr(self, 'id', None) is None:
             self.fecha_insercion = ahora

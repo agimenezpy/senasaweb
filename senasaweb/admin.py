@@ -52,7 +52,7 @@ class MyGeoModelAdmin(gisadmin.GeoModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if self.view:
-            return [f.name for f in self.model._meta.fields if f.name != "geom"]
+            return [f.name for f in self.model._meta.fields if f.name != "geom" and f.name != "ubicacion"]
         else:
             return self.readonly_fields
 
