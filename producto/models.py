@@ -36,21 +36,22 @@ class Obra(gismodels.Model):
         limit_choices_to={'categoria__exact' : Tipo.TIPO_POBLACION},on_delete=models.PROTECT)
     propietario = models.ForeignKey(User, verbose_name="creado por",null=True,on_delete=models.PROTECT,related_name="+")
     modifica = models.ForeignKey(User, verbose_name="modificado por",null=True,on_delete=models.PROTECT,editable=False,related_name="+")
-    creado = models.DateField("fecha de creacion",editable=False)
-    actualizado = models.DateField(u"fecha de actualización",editable=False)
+    creado = models.DateField("fecha de creacion",editable=False,auto_now_add=True)
+    actualizado = models.DateField(u"fecha de actualización",editable=False,auto_now=True)
     objects = gismodels.GeoManager()
 
     def save(self, *args, **kwargs):
-        ahora = datetime.now()
-        if self.codigo == "" and self.grupo_id is not None:
-            self.codigo = "%s%03d" % (self.grupo.codigo,
-                                      Obra.objects.filter(grupo_id__exact=self.grupo_id)
-                                      .aggregate(models.Count("codigo"))["codigo__count"] + 1)
-        elif self.grupo_id is None:
+        if self.grupo_id is None:
             self.codigo = "%d" % (Obra.objects.all().aggregate(models.Max("id"))["id__max"] + 1)
-        if getattr(self, 'id', None) is None:
-            self.creado = ahora
-        self.actualizado = ahora
+        elif self.codigo == "" or self.codigo.find(self.grupo.codigo) == -1:
+            qty = Obra.objects.raw("SELECT 0 as id, MAX(cast(substring(codigo from '[0-9]+') as int)) as secuencia__max FROM " +
+                                    self._meta.db_table
+                                    + " WHERE grupo_id = %s", [self.grupo.codigo])[0].secuencia__max
+            if qty is None:
+                qty = 0
+            else:
+                qty += 1
+            self.codigo = "%s%03d" % (self.grupo.codigo,qty)
         super(Obra, self).save(*args, **kwargs)
 
     def __unicode__(self):
@@ -65,8 +66,8 @@ class Obra(gismodels.Model):
 
 class Estado(models.Model):
     descripcion = models.TextField(u"descripción",max_length=200)
-    fecha_insercion = models.DateTimeField("insertado")
-    fecha_actualizacion = models.DateTimeField("actualizado")
+    fecha_insercion = models.DateTimeField("insertado",auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField("actualizado",auto_now=True)
     autor = models.ForeignKey(User, verbose_name="autor",on_delete=models.PROTECT,related_name="+")
     obra = models.ForeignKey(Obra, verbose_name="obra",to_field="codigo",on_delete=models.CASCADE,related_name="+")
 
@@ -75,10 +76,6 @@ class Estado(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None):
         self.autor = self.obra.modifica
-        ahora = datetime.now()
-        if getattr(self, 'id', None) is None:
-            self.fecha_insercion = ahora
-        self.fecha_actualizacion = ahora
         super(Estado, self).save(force_insert, force_update, using)
 
     class Meta:
@@ -113,8 +110,8 @@ class Contacto(models.Model):
 
 class Comentario(models.Model):
     descripcion = models.TextField(u"descripción",max_length=200)
-    fecha_insercion = models.DateTimeField("insertado")
-    fecha_actualizacion = models.DateTimeField("actualizado")
+    fecha_insercion = models.DateTimeField("insertado",auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField("actualizado",auto_now=True)
     autor = models.ForeignKey(User, verbose_name="autor",on_delete=models.PROTECT,related_name="+")
     junta = models.ForeignKey('Junta', verbose_name="junta",on_delete=models.CASCADE)
 
@@ -123,10 +120,6 @@ class Comentario(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None):
         self.autor = self.junta.modifica
-        ahora = datetime.now()
-        if getattr(self, 'id', None) is None:
-            self.fecha_insercion = ahora
-        self.fecha_actualizacion = ahora
         super(Comentario, self).save(force_insert, force_update, using)
 
     class Meta:

@@ -61,10 +61,15 @@ class Distrito(gismodels.Model):
         permissions = (('view_distrito','Can view distrito'),)
 
     def save(self, *args, **kwargs):
-        if self.codigo  == "":
-            self.codigo = "%s%02d" % (self.departamento_id,
-                                        Distrito.objects.filter(departamento_id__exact=self.departamento_id)
-                                                    .aggregate(models.Count("codigo"))["codigo__count"] + 1)
+        if self.codigo  == "" or self.codigo.find(self.departamento.codigo) == -1:
+            qty = Distrito.objects.raw("SELECT 0 as id,MAX(cast(regexp_replace(codigo, '^"+self.departamento.codigo+"','') as int)) as secuencia__max FROM " +
+                                           self._meta.db_table
+                                        + " WHERE departamento_id = %s ", [self.departamento.codigo])[0].secuencia__max
+            if qty is None:
+                qty = 0
+            else:
+                qty += 1
+            self.codigo = "%s%02d" % (self.departamento.codigo,qty)
         super(Distrito, self).save(*args, **kwargs)
 
 class Localidad(gismodels.Model):
@@ -94,10 +99,15 @@ class Localidad(gismodels.Model):
         permissions = (('view_localidad','Can view localidad'),)
 
     def save(self, *args, **kwargs):
-        if self.codigo is None or len(self.codigo) == 0:
-            self.codigo = "%s%03d" % (self.distrito_id,
-                                      Localidad.objects.filter(distrito_id__exact=self.distrito_id)
-                                                  .aggregate(models.Count("codigo"))["codigo__count"] + 1)
+        if self.codigo  == "" or self.codigo.find(self.distrito.codigo) == -1:
+            qty = Localidad.objects.raw("SELECT 0 as id,MAX(cast(regexp_replace(codigo,'"+self.distrito.codigo+"','') as int)) as secuencia__max FROM " +
+                                       self._meta.db_table
+                                       + " WHERE distrito_id = %s ", [self.distrito.codigo])[0].secuencia__max
+            if qty is None:
+                qty = 0
+            else:
+                qty += 1
+            self.codigo = "%s%03d" % (self.distrito.codigo,qty)
         super(Localidad, self).save(*args, **kwargs)
 
 class Proyecto(models.Model):
@@ -110,6 +120,12 @@ class Proyecto(models.Model):
 
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.nombre)
+
+    def save(self, force_insert=False, force_update=False, using=None):
+        upcode = self.codigo.upper()
+        if getattr(self, "id", None) is None or self.codigo != upcode:
+            self.codigo = self.codigo.upper()
+        super(Proyecto,self).save(force_insert, force_update, using)
 
     class Meta:
         verbose_name = u"proyecto de inversión"
@@ -127,7 +143,7 @@ class Grupo(models.Model):
         return u"[%s] %s" % (self.codigo, self.descripcion)
 
     def save(self, *args, **kwargs):
-        if self.codigo is None or len(self.codigo) == 0:
+        if self.codigo == "" or self.codigo.find(self.proyecto.codigo) == -1:
             qty = Grupo.objects.raw("SELECT 0 as id,MAX(cast(substring(codigo from '[0-9]+') as int)) as secuencia__max FROM " +
                                         self._meta.db_table
                                         + " WHERE proyecto_id = %s",
