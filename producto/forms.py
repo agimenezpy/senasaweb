@@ -20,7 +20,7 @@ class ObraForm(ModelForm):
             if coordenadax == 0 and coordenaday == 0:
                 return cleaned_data
             pt = Point(coordenadax,coordenaday,srid=32721)
-            if not distrito.geom.contains(pt):
+            if False and not distrito.geom.contains(pt):
                 raise ValidationError("Las coordenadas X e Y no estan dentro del distrito elegido")
         return cleaned_data
 
@@ -28,7 +28,7 @@ class ObraForm(ModelForm):
         ubicacion = self.cleaned_data['ubicacion']
         if self.cleaned_data.has_key('distrito') and ubicacion is not None:
             distrito = self.cleaned_data['distrito']
-            if not distrito.geom.contains(ubicacion):
+            if False and not distrito.geom.contains(ubicacion):
                 raise ValidationError("El punto escogido no esta dentro del distrito elegido")
         return ubicacion
 

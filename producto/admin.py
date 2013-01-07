@@ -92,9 +92,12 @@ class ObraAdmin(GeoModelAdmin):
     def save_model(self, request, obj, form, change):
         if getattr(obj, 'propietario', None) is None:
             obj.propietario = request.user
-        if obj.coordenada_x != 0 and obj.coordenada_y != 0:
+        if obj.coordenada_x != 0 and obj.coordenada_y != 0 and obj.ubicacion is None:
             pt = Point(obj.coordenada_x, obj.coordenada_y,srid=32721)
             obj.ubicacion = pt
+        elif obj.ubicacion is not None:
+            if obj.coordenada_x != obj.ubicacion.x or obj.coordenada_y != obj.ubicacion.y:
+                obj.coordenada_x, obj.coordenada_y = obj.ubicacion.x, obj.ubicacion.y
         obj.modifica = request.user
         super(ObraAdmin, self).save_model(request, obj, form, change)
 
