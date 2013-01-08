@@ -36,7 +36,7 @@ class ObraForm(ModelForm):
         junta = self.cleaned_data['junta']
         if self.cleaned_data.has_key('tipo_junta') and junta is None:
             tipo_junta = self.cleaned_data['tipo_junta']
-            if tipo_junta is not None and tipo_junta.id == 1:
+            if False and tipo_junta is not None and tipo_junta.id == 1:
                 raise ValidationError("Debe especificar la referencia a la junta conformada")
         return junta
 

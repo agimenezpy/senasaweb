@@ -7,7 +7,8 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('Alberto Gimenez', 'alberto.gimenez@pykoder.com'),
+    #('Alberto Gimenez', 'alberto.gimenez@pykoder.com'),
+    ('Hugo Astigarra','hugo.astigarraga@senasa.gov.py'),
 )
 
 MANAGERS = ADMINS
