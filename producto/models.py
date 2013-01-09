@@ -44,7 +44,7 @@ class Obra(gismodels.Model):
         if self.grupo_id is None:
             self.codigo = "%d" % (Obra.objects.all().aggregate(models.Max("id"))["id__max"] + 1)
         elif self.codigo == "" or self.codigo.find(self.grupo.codigo) == -1:
-            qty = Obra.objects.raw("SELECT 0 as id, MAX(cast(substring(codigo from '[0-9]+') as int)) as secuencia__max FROM " +
+            qty = Obra.objects.raw("SELECT 0 as id, MAX(cast(regexp_replace(codigo, '" + self.grupo.codigo + "', '') as int)) as secuencia__max FROM " +
                                     self._meta.db_table
                                     + " WHERE grupo_id = %s", [self.grupo.codigo])[0].secuencia__max
             if qty is None:

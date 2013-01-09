@@ -13,8 +13,8 @@ class ObraForm(ModelForm):
 
     def clean(self):
         cleaned_data = super(ObraForm, self).clean()
-        coordenadax = self.cleaned_data['coordenada_x']
-        coordenaday = self.cleaned_data['coordenada_y']
+        coordenadax = self.cleaned_data['coordenada_x'] if self.cleaned_data.has_key('coordenada_x') else 0
+        coordenaday = self.cleaned_data['coordenada_y'] if self.cleaned_data.has_key('coordenada_y') else 0
         if self.cleaned_data.has_key('distrito'):
             distrito = self.cleaned_data['distrito']
             if coordenadax == 0 and coordenaday == 0:

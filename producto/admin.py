@@ -100,7 +100,7 @@ class ObraAdmin(GeoModelAdmin):
                 obj.coordenada_x, obj.coordenada_y = obj.ubicacion.x, obj.ubicacion.y
         obj.modifica = request.user
         super(ObraAdmin, self).save_model(request, obj, form, change)
-        if not obj.distrito.geom.contains(obj.ubicacion):
+        if obj.ubicacion is not None and not obj.distrito.geom.contains(obj.ubicacion):
             messages.warning(request,u"La ubicación de la obra \"%s\" no esta dentro del distrito elegido" % obj)
 
     def get_urls(self):

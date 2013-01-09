@@ -100,7 +100,7 @@ class Localidad(gismodels.Model):
 
     def save(self, *args, **kwargs):
         if self.codigo  == "" or self.codigo.find(self.distrito.codigo) == -1:
-            qty = Localidad.objects.raw("SELECT 0 as id,MAX(cast(regexp_replace(codigo,'"+self.distrito.codigo+"','') as int)) as secuencia__max FROM " +
+            qty = Localidad.objects.raw("SELECT 0 as id,MAX(cast(regexp_replace(codigo,'^"+self.distrito.codigo+"','') as int)) as secuencia__max FROM " +
                                        self._meta.db_table
                                        + " WHERE distrito_id = %s ", [self.distrito.codigo])[0].secuencia__max
             if qty is None:
@@ -144,7 +144,7 @@ class Grupo(models.Model):
 
     def save(self, *args, **kwargs):
         if self.codigo == "" or self.codigo.find(self.proyecto.codigo) == -1:
-            qty = Grupo.objects.raw("SELECT 0 as id,MAX(cast(substring(codigo from '[0-9]+') as int)) as secuencia__max FROM " +
+            qty = Grupo.objects.raw("SELECT 0 as id,MAX(cast(regexp_replace(codigo, '^"+str(self.proyecto.codigo)+"', '') as int)) as secuencia__max FROM " +
                                         self._meta.db_table
                                         + " WHERE proyecto_id = %s",
                 [self.proyecto_id])[0].secuencia__max
