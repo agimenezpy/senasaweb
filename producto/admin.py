@@ -231,13 +231,15 @@ class ContactoAdmin(ModelAdmin):
     list_select_related = True
 
 class JuntaAdmin(ModelAdmin):
-    list_display = ('nombre','distrito','telefono')
+    list_display = ('id','nombre','distrito','telefono','organizacion')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
     list_select_related = True
+    list_display_links = ('nombre',)
     inlines = (MiembroInline,ComentarioInline)
     raw_id_fields = ('distrito','localidad',)
     form = JuntaForm
+    list_filter = ('organizacion','distrito__departamento__nombre')
 
     autocomplete_lookup_fields = {
         'fk' : ['distrito','localidad']

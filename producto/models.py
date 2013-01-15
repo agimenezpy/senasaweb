@@ -129,13 +129,17 @@ class Comentario(models.Model):
         permissions = (('view_comentario','Can view comentario'),)
 
 class Junta(models.Model):
-    nombre = models.CharField("nombre de junta",max_length=80)
+    nombre = models.CharField("nombre de junta",max_length=100)
     direccion = models.CharField("direccion",null=True,blank=True,max_length=100)
     telefono = models.CharField(u"teléfono", max_length=15,validators=[RegexValidator("^09[6789]\d{7,7}$")],
         help_text=u"Introduzca el número de telefono. Ej 0981321123",null=True,blank=True)
     distrito = models.ForeignKey(Distrito, verbose_name="distrito",to_field="codigo",on_delete=models.PROTECT)
     localidad = models.ForeignKey(Localidad, verbose_name="localidad",to_field="codigo",on_delete=models.PROTECT,null=True,blank=True)
     proyecto = models.ManyToManyField(Proyecto,verbose_name="Proyectos",blank=True)
+    organizacion = models.ForeignKey(Tipo, verbose_name=u"tipo de organización",related_name="+",
+        limit_choices_to={'categoria__exact' : Tipo.TIPO_ORGANIZACION},on_delete=models.PROTECT)
+    tipo_junta = models.ForeignKey(Tipo, verbose_name=u"situación de junta",related_name="+",
+        limit_choices_to={'categoria__exact' : Tipo.TIPO_SITUACION},on_delete=models.PROTECT)
     fecha_asamblea = models.DateField("fecha de asamblea constitutiva",null=True,blank=True)
     fecha_habilita = models.DateField(u"fecha de habilitación",null=True,blank=True)
     fecha_ignagura = models.DateField(u"fecha de ignaguración",null=True,blank=True)
@@ -149,11 +153,15 @@ class Junta(models.Model):
     def __unicode__(self):
         return u"[%d] %s" % (self.id, self.nombre)
 
+    def related_label(self):
+        return u"[%d] %s (%s - %s)" % (self.id, self.nombre, self.distrito.nombre, self.distrito.departamento.nombre)
+
     class Meta:
         db_table = "junta"
         verbose_name = "junta de saneamiento"
         verbose_name_plural = "juntas de saneamiento"
         permissions = (('view_junta','Can view junta'),)
+        ordering = ('id',)
 
 class Miembro(models.Model):
     TIPO_CARGO = ((1,"Presidente"),
