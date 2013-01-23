@@ -20,11 +20,13 @@ def get_field(obj,fieldname):
     while traverse:
         result = getattr(result,traverse[0])
         traverse.remove(traverse[0])
-    if match("[a-z]+_id",fieldname):
+    if match("[a-z_]+_id$",fieldname):
         result = TIPOS[result]
     return result if result is not None else ""
 
 TIPOS = {}
+
+from senasaweb.export.reporte import ReporteObras
 
 def export_obras(modeladmin, request, queryset,processor):
     """
@@ -41,6 +43,9 @@ def export_obras(modeladmin, request, queryset,processor):
     if queryset is not None:
         w,params = queryset.query.where.as_sql(connection.ops.quote_name,connection)
         filtro = "WHERE " + w
+    agg_func = "array_to_string(array_agg(estado.descripcion),'<br/>')"
+    if settings.DATABASES['default']['ENGINE'] == 'django.contrib.gis.db.backends.spatialite':
+        agg_func = "GROUP_CONCAT(estado.descripcion,'<br/>')"
 
     sql = (r"""
 SELECT obra.id,
@@ -56,26 +61,64 @@ grupo.descripcion as grupo_descripcion,
 producto_id,
 cantidad,
 poblacion,
-estado as estado_descripcion
+estado as estado_descripcion,
+inicio,
+fin,
+porcentaje,
+coordenada_x,
+coordenada_y,
+tipo_junta_id,
+tipo_poblacion_id,
+%s as observacion
 FROM obra
 JOIN distrito ON distrito.codigo = obra.distrito_id
 JOIN departamento ON departamento.codigo = distrito.departamento_id
 JOIN grupo_obra grupo ON grupo.codigo = grupo_id
 JOIN proyecto ON proyecto.id = grupo.proyecto_id
+LEFT JOIN estado ON estado.obra_id = obra.codigo
 %s
+GROUP BY obra.id,
+departamento.nombre,
+obra.locacion,
+distrito.codigo,
+distrito.nombre,
+proyecto.nombre,
+proceso_id,
+organizacion_id,
+grupo.codigo,
+grupo.descripcion,
+producto_id,
+cantidad,
+poblacion,
+estado,
+inicio,
+fin,
+porcentaje,
+coordenada_x,
+coordenada_y,
+tipo_junta_id,
+tipo_poblacion_id
 ORDER BY distrito.codigo,grupo.codigo
-""" % filtro)
+""" % (agg_func,filtro))
     fields = ((u"Departamento","departamento_nombre"),
               (u"Localidad","locacion"),
               (u"Distrito","distrito_nombre"),
               (u"Nombre programa","proyecto_nombre"),
+              (u"Inicio de actividades",lambda it : it.inicio.strftime("%d/%m/%Y")),
+              (u"Fin de actividades",lambda it : it.fin.strftime("%d/%m/%Y")),
               (u"Proceso","proceso_id"),
               (u"Estado Actual","estado_descripcion"),
+              (u"Porcentaje de avance","porcentaje"),
+              (u"Coordenada X","coordenada_x"),
+              (u"Coordenada Y","coordenada_y"),
               (u"Tipo de organización", "organizacion_id"),
+              (u"Situación de Junta", "tipo_junta_id"),
               (u"Grupo de obras","grupo_descripcion"),
               (u"Nombre producto", "producto_id"),
               (u"Cantidad de producto","cantidad"),
-              (u"Población beneficiada","poblacion")
+              (u"Tipo de Población","tipo_poblacion_id"),
+              (u"Población beneficiada","poblacion"),
+              (u"Observación","observacion")
         )
     return processor(modeladmin,request,queryset,fields,sql,params)
 
@@ -171,6 +214,14 @@ def save_pdf(modeladmin,request,queryset,fields,sql,params):
     doc.build(elements,canvasmaker=NumberedCanvas)
     return {'filename':filename,'type':'pdf'}
 
+def save_report(modeladmin,request,queryset,fields,sql,params):
+    opts = modeladmin.model._meta
+    model = modeladmin.model
+    reporte = ReporteObras(queryset=model.objects.raw(sql,params))
+    now = datetime.now()
+    filename = "%s_%s.pdf" % (unicode(opts).replace(".","_"),now.strftime("%d-%m-%Y_%H%M%S"))
+    reporte.generar(os.path.join(settings.DOWNLOAD_DIR,filename))
+    return {'filename':filename,'type':'pdf'}
 
 def export_obras_xls(modeladmin, request, queryset):
     if not request.user.is_staff or not modeladmin.has_change_permission(request):
@@ -183,7 +234,7 @@ export_obras_xls.short_description = "Exportar seleccionados a Excel"
 def export_obras_pdf(modeladmin, request, queryset):
     if not request.user.is_staff or not modeladmin.has_change_permission(request):
         raise PermissionDenied
-    ctx = export_obras(modeladmin,request,queryset,save_pdf)
+    ctx = export_obras(modeladmin,request,queryset,save_report)
     ctx['title'] = 'Descarga de archivos'
     return TemplateResponse(request, "admin/descargas.html",ctx,current_app=modeladmin.admin_site.name)
 export_obras_pdf.short_description = "Exportar seleccionados a PDF"
