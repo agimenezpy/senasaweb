@@ -1,0 +1,130 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static admin_modify %}
+{% load url from future %}
+{% load admin_urls %}
+
+{% block extrahead %}{{ block.super }}
+{% url 'admin:jsi18n' as jsi18nurl %}
+<script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
+
+{% block coltype %}{% if ordered_objects %}colMS{% else %}colMTab" data-dojo-type="dijit.layout.ContentPane"{% endif %}{% endblock %}
+
+{% block bodyclass %}{{ opts.app_label }}-{{ opts.object_name.lower }} change-form{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ app_label|capfirst|escape }}</a>
+&rsaquo; {% if has_change_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+&rsaquo; {% if add %}{% trans 'Add' %} {{ opts.verbose_name }}{% else %}{{ original|truncatewords:"18" }}{% endif %}
+</div>
+{% endblock %}
+{% endif %}
+{% block content_title %}{% endblock %}
+{% block content %}<div id="content-main" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="gutters: 'false'" style="height: 100%; width: 100%">
+<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top'">{% if title %}<h1>{{ title }}</h1>{% endif %}
+{% block object-tools %}
+{% if change %}{% if not is_popup %}
+  <ul class="object-tools">
+    {% block object-tools-items %}
+    <li><a href="history/" class="historylink">{% trans "History" %}</a></li>
+    {% if has_absolute_url %}<li><a href="../../../r/{{ content_type_id }}/{{ object_id }}/" class="viewsitelink">{% trans "View on site" %}</a></li>{% endif%}
+    {% endblock %}
+  </ul>
+{% endif %}{% endif %}
+{% endblock %}
+</div>
+<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post" id="{{ opts.module_name }}_form">{% csrf_token %}{% block form_top %}{% endblock %}
+{% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
+{% if save_on_top or errors %}
+<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top'">
+{% if save_on_top %}{% block submit_buttons_top %}{% submit_row %}{% endblock %}{% endif %}
+{% if errors %}
+    <p class="errornote">
+    {% blocktrans count counter=errors|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+    </p>
+    {{ adminform.form.non_field_errors }}
+{% endif %}
+</div>
+{% endif %}
+<div data-dojo-type="dijit.layout.TabContainer" data-dojo-props="tabPosition: 'top',region:'center'">
+{% block field_sets %}
+<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: 'Datos Principales'">
+  {% for fieldset in adminform %}
+    {% ifnotequal fieldset.classes 'tab' %}
+      {% include "admin/includes/fieldset.html" %}
+    {% else %}
+</div>
+<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '{{ fieldset.name }}'" id="{{ fieldset.name|slugify|lower }}">
+      {% include "admin/includes/fieldset.html" %}
+    {% endifnotequal %}
+  {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block after_field_sets %}{% endblock %}
+
+{% block inline_field_sets %}
+{% for inline_admin_formset in inline_admin_formsets %}
+    <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="title: '{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}'" class='tab'>
+    {% include inline_admin_formset.opts.template %}
+    </div>
+{% endfor %}
+{% endblock %}
+</div>
+<div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'bottom'">
+{% block after_related_objects %}{% endblock %}
+
+{% block submit_buttons_bottom %}
+    {% if has_change_permission %}
+        {% submit_row %}
+    {% endif %}
+{% endblock %}
+</div>
+{% if adminform and add %}
+   <script type="text/javascript">document.getElementById("{{ adminform.first_field.id_for_label }}").focus();</script>
+{% endif %}
+
+{# JavaScript for prepopulated fields #}
+{% prepopulated_fields_js %}
+
+</form></div>
+<style type="text/css">
+    #id_locacion .ui-autocomplete-loading {
+        background: white url({%  static 'grappelli/images/backgrounds/loading-small.gif' %}) right center no-repeat;
+    }
+</style>
+<script type="text/javascript">
+(function($) {
+    $( "#id_locacion" ).autocomplete({
+        source: function( request, response ) {
+            $.ajax({
+                url: "{% url 'grp_autocomplete_lookup' %}",
+                dataType: "json",
+                data: {
+                    app_label: "producto",
+                    model_name: "locacion",
+                    term: request.term
+                },
+                success: function( data ) {
+                    response($.map(data,function(item) {return {label:$.trim(item.label), value:$.trim(item.label)} }));
+                }
+            });
+        },
+        minLength: 4,
+        open: function() {
+            $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+        },
+        close: function() {
+            $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+        }
+    });
+})(grp.jQuery);
+</script>
+{% endblock %}

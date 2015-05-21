@@ -1,0 +1,157 @@
+{% extends "dojango/base_i18n.html" %}
+{% load admin_static navigation grp_tags %}{% load url from future %}
+
+{% block dojango_page_title %} {% block title %}{% endblock %} {% endblock %}
+{% block dojango_header_extra %}
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}" />
+<link rel="stylesheet" type="text/css" href="{% static "grappelli/stylesheets/screen.css" %}" />
+{% block extrastyle %}{% endblock %}
+<link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}" />
+
+<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}{% static "admin/css/ie.css" %}{% endblock %}" /><![endif]-->
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}" />{% endif %}
+<script type="text/javascript" src="{% static 'js/jquery.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'grappelli/js/grappelli.min.js' %}" ></script>
+<script type="text/javascript">
+    window.__admin_media_prefix__ = "{% filter escapejs %}{% static "admin/" %}{% endfilter %}";
+    window.__prefix__ = "{% context %}";
+    var DATE_FORMAT = "{% get_date_format %}",
+    TIME_FORMAT = "{% get_time_format %}",
+    DATETIME_FORMAT = "{% get_datetime_format %}";
+    dojo.addOnUnload(function() {
+       dojo.block("container");
+    });
+
+    (function($) {
+        $(document).ready(function() {
+            grappelli.initDateAndTimePicker();
+            var related_lookup_fields_fk = {% get_related_lookup_fields_fk adminform.model_admin %};
+            var autocomplete_fields_fk = {% get_autocomplete_lookup_fields_fk adminform.model_admin %};
+            $.each(related_lookup_fields_fk, function() {
+                $("#id_" + this).grp_related_fk({lookup_url:"{% url 'grp_related_lookup' %}"});
+            });
+            $.each(autocomplete_fields_fk, function() {
+                $("#id_" + this).grp_autocomplete_fk({
+                    lookup_url:"{% url 'grp_related_lookup' %}",
+                    autocomplete_lookup_url:"{% url 'grp_autocomplete_lookup' %}"
+                });
+            });
+
+            $('#loadingOverlay').fadeOut(1500, function(node){
+                $('#loadingOverlay').css('display', 'none');
+            });
+            $('#container').css("visibility", "visible");
+
+            var map = null;
+            var win = $(window)[0]
+            if (win['geodjango_geom'])
+                map = win['geodjango_geom'].map
+            if (win['geodjango_ubicacion'])
+                map = win['geodjango_ubicacion'].map
+            $(".vForeignKeyRawIdAdminField").map(function (o,a) {
+                if (a.name.match("localidad|departamento|distrito")) return a;
+            }).each(function (idx,obj) {
+                    if (autocomplete_fields_fk.indexOf(obj.name) != -1)
+                        tgt = $(obj).prev();
+                    else
+                        tgt = $(obj);
+                    tgt.bind("focus blur", {"map" : map, "jquery": $, "target" : obj},handle_lookup);
+            });
+            if (map) {
+                $("#centerPanel").scroll(function () {map.updateSize()});
+                $("#ubicacion").scroll(function () {map.updateSize()});
+            }
+        });
+    })(grp.jQuery);
+</script>
+{% block extrahead %}{% endblock %}
+<script type="text/javascript" src="{% static "js/block.js" %}"></script>
+<script type="text/javascript" src="{% static "js/field_lookup.js" %}"></script>
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+{% endblock %}
+
+{% load i18n %}
+
+<!-- Container -->
+{% block dojango_content %}
+<div id="loadingOverlay" class="dojoBlockOverlay" style="position: absolute; top: 0%; left: 0%; width: 100%; height: 100%; background-color: white; z-index: 999; opacity: 0.6"></div>
+<div id="container" class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+        data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline', gutters: false" style="visibility: hidden;">
+    {% if not is_popup %}
+    <div id="headerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'top'">
+        <!-- Header -->
+        <div id="header">
+            <div id="logo"></div>
+            <div id="branding">
+            {% block branding %}{% endblock %}
+            </div>
+            {% if user.is_active and user.is_staff %}
+            <div id="user-tools">
+                {% trans 'Welcome,' %}
+                <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>.
+            </div>
+            {% endif  %}
+        </div>
+        <!-- END Header -->
+        {% if user.is_active and user.is_staff %}
+        <div id="toolbarPanel" class="breadcrumbs" data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="design: 'headline', gutters: false">
+            <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'leading'">
+            {% block breadcrumbs %}
+                <div class="breadcrumbs">
+                <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+                {% if title %} &rsaquo; {{ title }}{% endif %}
+                </div>
+            {% endblock %}
+            </div>
+            <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'trailing'" style="overflow: hidden">
+                <div class="breadcrumbs" style="width: 230px;">
+                {% block userlinks %}
+
+                    {% url 'django-admindocs-docroot' as docsroot %}
+                    {% if docsroot %}
+                        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> |
+                    {% endif %}
+                    <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> |
+                    <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+                {% endblock %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% block nav-global %}{% endblock %}
+
+    <div id="centerPanel" data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'center'">
+        {% block messages %}
+            {% if messages %}
+            <ul class="messagelist">{% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}</ul>
+            {% endif %}
+        {% endblock messages %}
+
+        <!-- Content -->
+        <div id="content" class="{% block coltype %}colM{% endblock %}">
+            {% block pretitle %}{% endblock %}
+            {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+            {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+            {% endblock %}
+            <br class="clear" />
+        </div>
+        <!-- END Content -->
+    </div>
+    {% block sidebar %}{% endblock %}
+    <div id="footerPanel"  data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region: 'bottom'">
+        {% block footer %}<div id="footer">&copy;2012. Servicio Nacional de Saneamiento Ambiental</div>{% endblock %}
+    </div>
+</div>
+<!-- END Container -->
+{% endblock %}
+
+</body>
+</html>

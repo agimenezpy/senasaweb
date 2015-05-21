@@ -1,0 +1,24 @@
+- model: parametros.Categoria
+  pk: SJS
+  fields:
+    nombre: Situación de Junta de Saneamiento
+- model: parametros.Categoria
+  pk: PRO
+  fields:
+    nombre: Proceso
+- model: parametros.Categoria
+  pk: ORG
+  fields:
+    nombre: Tipo de Organización
+- model: parametros.Categoria
+  pk: PRD
+  fields:
+    nombre: Nombre de Producto
+- model: parametros.Categoria
+  pk: POB
+  fields:
+    nombre: Tipo de Población
+- model: parametros.Categoria
+  pk: CRG
+  fields:
+    nombre: Cargo

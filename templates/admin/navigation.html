@@ -1,0 +1,50 @@
+{% load i18n static %}
+{% load url from future %}
+{% if not is_popup and app_list  %}
+    <div id="navigation" data-dojo-type="dijit.layout.AccordionContainer" data-dojo-props="region: 'left', minSize: 100, splitter: true">
+    {% for app in app_list %}
+        <div data-dojo-type="dijit.layout.ContentPane" data-dojo-props="region:'top',title:'{% blocktrans with name=app.name %}{{ name }}{% endblocktrans %}'"
+                {% if app.name|lower == selected %} selected="true" {% endif %}>
+            <ul class="plainlist">
+            {% for model in app.models %}
+                <div style='font-size: small; font-weight: bold; padding-top: 10px;padding-bottom: 10px;' >{{ model.name }}</div>
+                {% if model.add_url %}
+                <li>
+                    <span style="width:16px;height: 16px;" class="dijitIconSave">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <a id="add_{{ model.name|slugify }}" href="{{ model.add_url }}">{% trans 'Add' %} {{ model.name }}</a>
+                </li>
+                {% endif %}
+                {% ifequal model.name 'Obras' %}
+                <li>
+                    <span style="width:16px;height: 16px;" class="dijitIconEdit">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <a href="{{ model.admin_url }}">Actualizar {{ model.name }}</a>
+                </li>
+                <li>
+                    <span style="width:16px;height: 16px;" class="dijitIconTable">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <a href="{{ model.admin_url }}list/">Listar {{ model.name }}</a>
+                </li>
+                <li>
+                    <span style="width:16px;height: 16px;" class="dijitIconApplication">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <a href="{% url 'admin:producto_obra_export' %}">Exportar {{ model.name }}</a>
+                    </li>
+                <li>
+                    <img src="{% static 'img/globe.png' %}"/>
+                    <a href="{% url 'home' %}" target="_blank">Ver Mapa de {{ model.name }}</a>
+                </li>
+                {% else %}
+                <li>
+                    {% if model.admin_url %}
+                    <span style="width:16px;height: 16px;" class="dijitIconTable">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <a href="{{ model.admin_url }}">Listar {{ model.name }}</a>
+                    {% else %}
+                    {{ model.name }}
+                    {% endif %}
+                </li>
+                {% endifequal %}
+            {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+    </div>
+
+{% endif %}

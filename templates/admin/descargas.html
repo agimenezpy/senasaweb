@@ -1,0 +1,15 @@
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block content %}
+    El siguiente archivo esta disponible para su descarga:
+    <div data-dojo-type="dijit.layout.BorderContainer" data-dojo-props="gutters:false" style="height: 500px;">
+        {% ifequal type 'xls' %}
+            <div data-dojo-type='dijit.layout.ContentPane' style="width: 32px" data-dojo-props="region:'left'"><img src='{% static 'img/excel.png' %}' /></div>
+        {% else %}
+            <div data-dojo-type='dijit.layout.ContentPane' data-dojo-props="region:'left'"><img src='{% static 'img/pdf.png' %}' /></div>
+        {% endifequal %}
+        <div data-dojo-type='dijit.layout.ContentPane' data-dojo-props="region:'left'"><a href="{% static 'descargas/'%}{{ filename }}" target="_blank">{{ filename }}</a></div>
+    </div>
+    <script type="text/javascript">dojo.addOnUnload(function(){dojo.unblock("container")})</script>
+{% endblock %}
