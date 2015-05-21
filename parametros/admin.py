@@ -1,27 +1,29 @@
 # -*- coding: iso-8859-1 -*-
 from django.contrib import admin
-from senasaweb.admin import MyGeoModelAdmin as GeoModelAdmin,MyModelAdmin as ModelAdmin
+from senasaweb.admin import MyGeoModelAdmin as GeoModelAdmin, MyModelAdmin as ModelAdmin
 from models import *
 from django.conf import settings
-from dojango.forms.widgets import SimpleTextarea,NumberTextInput
+from dojango.forms.widgets import SimpleTextarea, NumberTextInput
+
 
 class DepartamentoAdmin(GeoModelAdmin):
-    list_display = ('codigo','nombre')
+    list_display = ('codigo', 'nombre')
     list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
 
     fieldsets = (
         (None, {
-            'fields' : ('nombre',)
+            'fields': ('nombre',)
         }),
         (u"Información Geográfica", {
-            'fields' : ('geom',)
+            'fields': ('geom',)
         })
     )
 
+
 class DistritoAdmin(GeoModelAdmin):
-    list_display = ('codigo','nombre','departamento')
+    list_display = ('codigo', 'nombre', 'departamento')
     list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
@@ -29,53 +31,56 @@ class DistritoAdmin(GeoModelAdmin):
     list_select_related = True
     fieldsets = (
         (None, {
-            'fields' : ('nombre','departamento')
+            'fields': ('nombre', 'departamento')
         }),
         (u"Información Geográfica", {
-            'fields' : ('geom',)
+            'fields': ('geom',)
         })
     )
 
+
 class LocalidadAdmin(GeoModelAdmin):
-    list_display = ('codigo','nombre','distrito_nombre')
+    list_display = ('codigo', 'nombre', 'distrito_nombre')
     list_display_links = ('nombre',)
     list_per_page = settings.LIST_PER_PAGE
-    search_fields = ('nombre','distrito__nombre')
+    search_fields = ('nombre', 'distrito__nombre')
     list_filter = ('distrito__departamento__nombre',)
     list_select_related = True
     fieldsets = (
         (None, {
-            'fields' : ('nombre','distrito')
+            'fields': ('nombre', 'distrito')
         }),
         (u"Información Geográfica", {
-            'fields' : ('geom',)
+            'fields': ('geom',)
         })
     )
     raw_id_fields = ('distrito',)
 
     autocomplete_lookup_fields = {
-        'fk' : ['distrito']
+        'fk': ['distrito']
     }
 
-    def distrito_nombre(self,obj):
+    def distrito_nombre(self, obj):
         return obj.distrito.nombre
+
     distrito_nombre.admin_order_field = 'distrito'
     distrito_nombre.short_description = u"distrito"
+
 
 class MiembroInline(admin.TabularInline):
     model = Miembro
     raw_id_fields = ("usuario",)
     extra = 0
 
+
 class ProyectoAdmin(ModelAdmin):
-    list_display = ('id','nombre','monto_proyecto')
+    list_display = ('id', 'nombre', 'monto_proyecto')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('nombre',)
     formfield_overrides = {models.TextField: {
-                            'widget' : SimpleTextarea(attrs = {"required":True})},
-                           models.DecimalField : {
-                            'widget' : NumberTextInput(attrs = {"required":True})}
-                           }
+        'widget': SimpleTextarea(attrs={"required": True})}, models.DecimalField: {
+        'widget': NumberTextInput(attrs={"required": True})}
+    }
     inlines = (MiembroInline,)
 
     def queryset(self, request):
@@ -90,11 +95,13 @@ class ProyectoAdmin(ModelAdmin):
 
     def monto_proyecto(self, obj):
         return "%s %.2f" % (obj.moneda, obj.presupuesto)
+
     monto_proyecto.admin_order_field = 'presupuesto'
     monto_proyecto.short_description = u"monto presupuesto"
 
+
 class GrupoAdmin(ModelAdmin):
-    list_display = ('codigo','descripcion','monto_proyecto','proyecto')
+    list_display = ('codigo', 'descripcion', 'monto_proyecto', 'proyecto')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('descripcion',)
     list_filter = ('proyecto__nombre',)
@@ -113,17 +120,20 @@ class GrupoAdmin(ModelAdmin):
 
     def monto_proyecto(self, obj):
         return "%s %.2f" % (obj.proyecto.moneda, obj.proyecto.presupuesto)
+
     monto_proyecto.admin_order_field = 'proyecto__presupuesto'
 
+
 class TipoAdmin(ModelAdmin):
-    list_display = ('id','orden','etiqueta','categoria')
+    list_display = ('id', 'orden', 'etiqueta', 'categoria')
     list_per_page = settings.LIST_PER_PAGE
     list_filter = ('categoria__nombre',)
     list_select_related = True
-    radio_fields = {"color":admin.VERTICAL}
+    radio_fields = {"color": admin.VERTICAL}
+
 
 class CategoriaAdmin(ModelAdmin):
-    list_display = ('codigo','nombre')
+    list_display = ('codigo', 'nombre')
     list_per_page = settings.LIST_PER_PAGE
     search_fields = ('codigo',)
 

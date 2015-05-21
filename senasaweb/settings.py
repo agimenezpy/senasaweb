@@ -1,5 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 import os
+from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
+
 CONFIG_DIR = os.path.dirname(__file__)
 ROOT_DIR = os.path.dirname(CONFIG_DIR)
 
@@ -7,20 +9,20 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    #('Alberto Gimenez', 'alberto.gimenez@pykoder.com'),
-    ('Hugo Astigarra','hugo.astigarraga@senasa.gov.py'),
+    # ('Alberto Gimenez', 'alberto.gimenez@pykoder.com'),
+    ('Hugo Astigarra', 'hugo.astigarraga@senasa.gov.py'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'senasaweb',                      # Or path to database file if using sqlite3.
-        'USER': 'senasaweb',                      # Not used with sqlite3.
-        'PASSWORD': 'sen4dmin',                  # Not used with sqlite3.
-        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '5432',                      # Set to empty string for default. Not used with sqlite3.
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'senasaweb',
+        'USER': 'senasaweb',
+        'PASSWORD': 'sen4dmin',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -68,11 +70,8 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
     os.path.join(CONFIG_DIR, "static"),
-    ('dojo-media',os.path.join(ROOT_DIR, "dojango"+ os.path.sep + "dojo-media")),
+    ('dojo-media', os.path.join(ROOT_DIR, "dojango", "dojo-media")),
 )
 
 # List of finder classes that know how to find static files in
@@ -80,7 +79,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -90,18 +89,11 @@ SECRET_KEY = '6st8r-lf=fv0i6t&amp;!ihwoy_0-25&amp;zuf=ygb%i0m61ro38jetsl'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
+TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -120,7 +112,9 @@ ROOT_URLCONF = 'senasaweb.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'senasaweb.wsgi.application'
 
-TEMPLATE_DIRS = (os.path.join(ROOT_DIR,'templates'),)
+TEMPLATE_DIRS = (
+    os.path.join(ROOT_DIR, 'templates'),
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -155,11 +149,17 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'fileerr': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filters': ['require_debug_false'],
+            'filename': 'senasaweb_error.log',
         }
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['fileerr'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -168,20 +168,19 @@ LOGGING = {
 LIST_PER_PAGE = 15
 
 if os.name == "nt":
-    SPATIALITE_LIBRARY_PATH = "C:/OSGeo4W/bin/libspatialite-1.dll"
-    GDAL_LIBRARY_PATH = "C:/OSGeo4W/gdalwin32-1.6/bin/gdal16.dll"
-    #DATABASES['default']['ENGINE'] = 'django.contrib.gis.db.backends.spatialite'
-    #DATABASES['default']['NAME'] = os.path.join(ROOT_DIR,'senasaweb.sqlite')
+    # SPATIALITE_LIBRARY_PATH = ?
+    OSGEO_DIR = os.path.join(os.environ["USERPROFILE"], "Applications", "OSGeo4W", "bin")
+    os.putenv("PATH", os.environ["PATH"] + ";" + OSGEO_DIR)
+    GDAL_LIBRARY_PATH = os.path.join(OSGEO_DIR, "gdal18.dll")
+    GEOS_LIBRARY_PATH = os.path.join(OSGEO_DIR, "geos_c.dll")
     WMS_SERVICE = "http://www.senasa.gov.py/gisobras/wms"
-    CONTEXT = ""
-    CACHE_DIR = os.path.join(ROOT_DIR,"cache")
+    CACHE_DIR = os.path.join(ROOT_DIR, "cache")
     CACHE_TIMEOUT = 5
 else:
     SESSION_ENGINE = "django.contrib.sessions.backends.file"
     DEBUG = False
     TEMPLATE_DEBUG = DEBUG
-    CONTEXT = "/gisobras"
-    WMS_SERVICE = CONTEXT + "/wms"
+    WMS_SERVICE = "/wms"
     CACHE_DIR = '/var/tmp/django_cache'
     CACHE_TIMEOUT = 3600
 
@@ -198,15 +197,20 @@ DOJANGO_DOJO_PROFILE = "local_release"
 DOJANGO_DOJO_VERSION = "1.7.3"
 DOJANGO_DOJO_THEME = "claro"
 DOJANGO_DOJO_MEDIA_URL = 'dojo-media'
-STATIC_URL = CONTEXT + STATIC_URL
 DOJANGO_BASE_MEDIA_URL = STATIC_URL + DOJANGO_DOJO_MEDIA_URL
 
 ADMIN_REORDER = (
     ("Producto", ("Obras", "Contactos")),
-    ("Parametros", ("Departamentos","Distritos","Localidades",u"Proyectos de inversión","Grupos de obras")),
+    ("Parametros", ("Departamentos", "Distritos", "Localidades", u"Proyectos de inversión", "Grupos de obras")),
     ("Auth", ("Usuarios", "Grupos"))
 )
 
-DOWNLOAD_DIR = os.path.join(STATIC_ROOT,"descargas")
-TILE_MAP = "agimenez.map-eb2q2546" # mapbox.mapbox-light
+HITOS = (
+    (u"Promoción Social y Diseño", 30),
+    (u"Perforación del Pozo y Prueba de Bombeo", 40),
+    (u"Sistema de Tanque con Caseta y Red Domiciliaria", 30)
+)
+
+DOWNLOAD_DIR = os.path.join(STATIC_ROOT, "descargas")
+TILE_MAP = "agimenez.map-eb2q2546"  # mapbox.mapbox-light
 UI_THEME = 'smoothness'
