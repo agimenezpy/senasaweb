@@ -154,7 +154,7 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'filters': ['require_debug_false'],
-            'filename': 'senasaweb_error.log',
+            'filename': '/var/log/httpd/senasaweb_error.log',
         }
     },
     'loggers': {
@@ -174,12 +174,15 @@ if os.name == "nt":
     GDAL_LIBRARY_PATH = os.path.join(OSGEO_DIR, "gdal18.dll")
     GEOS_LIBRARY_PATH = os.path.join(OSGEO_DIR, "geos_c.dll")
     WMS_SERVICE = "http://www.senasa.gov.py/gisobras/wms"
+    CONTEXT = ""
     CACHE_DIR = os.path.join(ROOT_DIR, "cache")
     CACHE_TIMEOUT = 5
+    LOGGING["handlers"]["fileerr"]["filename"] = "error.log"
 else:
     SESSION_ENGINE = "django.contrib.sessions.backends.file"
     DEBUG = False
     TEMPLATE_DEBUG = DEBUG
+    CONTEXT = "/gisobras"
     WMS_SERVICE = "/wms"
     CACHE_DIR = '/var/tmp/django_cache'
     CACHE_TIMEOUT = 3600
@@ -197,6 +200,7 @@ DOJANGO_DOJO_PROFILE = "local_release"
 DOJANGO_DOJO_VERSION = "1.7.3"
 DOJANGO_DOJO_THEME = "claro"
 DOJANGO_DOJO_MEDIA_URL = 'dojo-media'
+STATIC_URL = CONTEXT + STATIC_URL
 DOJANGO_BASE_MEDIA_URL = STATIC_URL + DOJANGO_DOJO_MEDIA_URL
 
 ADMIN_REORDER = (

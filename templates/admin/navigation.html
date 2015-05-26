@@ -28,6 +28,10 @@
                     <a href="{% url 'admin:producto_obra_export' %}">Exportar {{ model.name }}</a>
                     </li>
                 <li>
+                    <span style="width:16px;height: 16px;" class="dijitIconChart">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    <a href="{% url 'admin:producto_obra_export' %}?op=1">Exportar Hitos de {{ model.name }}</a>
+                    </li>
+                <li>
                     <img src="{% static 'img/globe.png' %}"/>
                     <a href="{% url 'home' %}" target="_blank">Ver Mapa de {{ model.name }}</a>
                 </li>
