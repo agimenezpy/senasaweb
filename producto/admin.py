@@ -243,7 +243,10 @@ class ObraListAdmin(GeoModelAdmin):
     fmt_fin.admin_order_field = 'fin'
 
     def export(self, request, extra_context=None):
-        return export_obras_xls(self, request, None)
+        if request.GET.get("op", "0") != "1":
+            return export_obras_xls(self, request, None)
+        else:
+            return export_hitos_xls(self, request, None)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         tmp = super(ObraListAdmin, self).change_view(request, object_id, form_url, extra_context)

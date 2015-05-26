@@ -51,7 +51,8 @@ def export_obras(modeladmin, request, queryset, processor, extra=False):
     params = []
     if queryset is not None:
         w, params = queryset.query.where.as_sql(connection.ops.quote_name, connection)
-        filtro = "WHERE " + w
+        if w is not None:
+            filtro = "WHERE " + w
 
     sql = ("""SELECT obra.id, departamento.nombre as departamento_nombre, obra.locacion, distrito.codigo as distrito_id,
        distrito.nombre as distrito_nombre, proyecto.nombre as proyecto_nombre, proceso_id, organizacion_id,
@@ -65,6 +66,7 @@ JOIN distrito ON distrito.codigo = obra.distrito_id
 JOIN departamento ON departamento.codigo = distrito.departamento_id
 JOIN grupo_obra grupo ON grupo.codigo = grupo_id
 JOIN proyecto ON proyecto.id = grupo.proyecto_id
+JOIN tipo ON tipo.id = obra.producto_id
 LEFT JOIN obra_hitos ON obra_hitos.obra_id = obra.id
 %s
 ORDER BY distrito.codigo,grupo.codigo
