@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>Obras</title>
+    <title>OBRAS</title>
 {% load static %}
 {% get_static_prefix as STATIC_PREFIX %}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}" />
@@ -18,7 +18,7 @@
     <script type="text/javascript" src="http://api.tiles.mapbox.com/mapbox.js/v0.6.6/mapbox.js" ></script>
     <script type="text/javascript" src="{% static 'js/script.js' %}" ></script>
     <div class='hmap'>
-        <div id="header"><div id="branding"><h1>Obras de Saneamiento</h1></div></div>
+        <div id="header"><div id="branding"><h1>OBRAS DE SANEAMIENTO</h1></div></div>
     </div>
     <div class="contentmap"><img src="{% static 'img/senasa.png'  %}"/>
       <div id="tabs">
@@ -27,21 +27,21 @@
             <li><a href="#tab-2">Leyenda</a></li>
         </ul>
         <div id="tab-1">
-            <h2>Departamento</h2>
+            <h2>DEPARTAMENTO</h2>
             <select name="departamento">
                 <option value='Ninguno'>Ninguno</option>
                 {% for key,value in departamento %}
                 <option value='{{ value|last }}'>({{ key }}) {{ value|first }}</option>
                 {% endfor %}
             </select>
-            <h2>Producto</h2>
+            <h2>PRODUCTO</h2>
             <ul>
             <li><input id="chkTodos" type="checkbox" value="Todos" name="prod_check" checked="checked"/>  Todos</li>
             {% for key, value in producto.items %}
                 <li><input type="checkbox" name='prod_check' value="{{ value }}" checked="checked"/>  {{ value }}</li>
             {% endfor %}
             </ul>
-            <h2>Proyecto</h2>
+            <h2>PROYECTO</h2>
             <ul>
                 <li><input id="chkTodosP" type="checkbox" value="Todos" name="proj_check" checked="checked"/>  Todos</li>
                 {% for key, value in proyecto.items %}
@@ -50,7 +50,7 @@
             </ul>
         </div>
         <div id="tab-2">
-            <div><h2>Leyenda</h2></div>
+            <div><h2>LEYENDA</h2></div>
         </div>
       </div>
     </div>
