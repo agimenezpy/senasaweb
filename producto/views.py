@@ -10,6 +10,7 @@ from django.views.decorators.gzip import gzip_page
 from django.core.cache import cache
 from django.conf import settings
 from re import compile
+from django.utils import simplejson
 
 
 wgs84 = SpatialReference("EPSG:4326")
@@ -49,28 +50,20 @@ def obras(request):
                                                       "producto", "cantidad",
                                                       "ubicacion", "grupo").filter(ubicacion__isnull=False).exclude(
         proceso__id__exact=19)
-    pre = ""
-    response.write('{"type":"FeatureCollection","features":[')
+    collection = {"type":"FeatureCollection","features": []}
     for rw in rs:
         point = rw.ubicacion.transform(wgs84, clone=True)
-        response.write((unicode('%s{"type":"Feature",' +
-                                '"geometry":{"type":"Point",' +
-                                '"coordinates":[%.8f,%.8f]},' +
-                                '"properties":{"locacion":"%s","grupo":"%s","distrito":"%s","departamento":"%s",' +
-                                '"proceso":"%s","producto":"%s","cantidad":"%d"}}') % (pre,
-                                                                                       point.x, point.y,
-                                                                                       rw.locacion,
-                                                                                       rw.grupo_id,
-                                                                                       rw.distrito.nombre,
-                                                                                       DEPS[
-                                                                                           rw.distrito.departamento_id][
-                                                                                           0],
-                                                                                       TIPOS[rw.proceso_id],
-                                                                                       TIPOS[rw.producto_id],
-                                                                                       rw.cantidad
-                        )).encode("latin-1"))
-        pre = ","
-    response.write("]}")
+        feature = {"type":"Feature"}
+        feature["geometry"] = {"type":"Point", "coordinates": [point.x, point.y]}
+        feature["properties"] = {"locacion": rw.locacion,
+				"grupo": rw.grupo_id,
+                                "distrito": rw.distrito.nombre,
+                                "departamento": DEPS[rw.distrito.departamento_id][0],
+                                "proceso": TIPOS[rw.proceso_id],
+                                "producto": TIPOS[rw.producto_id],
+                                "cantidad": rw.cantidad}
+        collection["features"].append(feature)
+    response.write(unicode(simplejson.dumps(collection)).encode("latin-1"))
     cache.set("obra", response)
     return response
 

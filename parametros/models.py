@@ -19,7 +19,7 @@ class Departamento(gismodels.Model):
         return u"[%s] %s" % (self.codigo, self.nombre)
 
     def save(self, *args, **kwargs):
-        if self.codigo == "":
+        if self.id is None:
             qty = Departamento.objects.raw("SELECT 0 as id,MAX(cast(codigo as int)) as secuencia__max FROM " +
                                            self._meta.db_table)[0].secuencia__max
             if qty is None:
@@ -64,7 +64,7 @@ class Distrito(gismodels.Model):
         permissions = (('view_distrito', 'Can view distrito'),)
 
     def save(self, *args, **kwargs):
-        if self.codigo == "" or self.codigo.find(self.departamento.codigo) == -1:
+        if self.id is None:
             qty = Distrito.objects.raw(
                 "SELECT 0 as id,MAX(cast(regexp_replace(codigo, '^" + self.departamento.codigo + "','') as int)) as secuencia__max FROM " +
                 self._meta.db_table
@@ -104,7 +104,7 @@ class Localidad(gismodels.Model):
         permissions = (('view_localidad', 'Can view localidad'),)
 
     def save(self, *args, **kwargs):
-        if self.codigo == "" or self.codigo.find(self.distrito.codigo) == -1:
+        if self.id is None:
             qty = Localidad.objects.raw(
                 "SELECT 0 as id,MAX(cast(regexp_replace(codigo,'^" + self.distrito.codigo + "','') as int)) as secuencia__max FROM " +
                 self._meta.db_table
@@ -153,7 +153,7 @@ class Grupo(models.Model):
         return u"[%s] %s" % (self.codigo, self.descripcion)
 
     def save(self, *args, **kwargs):
-        if self.codigo == "" or self.codigo.find(self.proyecto.codigo) == -1:
+        if self.id is None:
             qty = Grupo.objects.raw("SELECT 0 as id,MAX(cast(regexp_replace(codigo, '^" + str(
                 self.proyecto.codigo) + "', '') as int)) as secuencia__max FROM " +
                                     self._meta.db_table

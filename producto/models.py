@@ -52,12 +52,13 @@ class Obra(gismodels.Model):
     def save(self, *args, **kwargs):
         if self.grupo_id is None:
             self.codigo = "%d" % (Obra.objects.all().aggregate(models.Max("id"))["id__max"] + 1)
-        elif self.codigo == "" or self.codigo.find(self.grupo.codigo) == -1:
+        elif self.id is None:
             qty = Obra.objects.raw(
-                "SELECT 0 as id, MAX(cast(regexp_replace(codigo, '" + self.grupo.codigo +
-                "', '') as int)) as secuencia__max FROM " +
-                self._meta.db_table
-                + " WHERE grupo_id = %s", [self.grupo.codigo])[0].secuencia__max
+                "SELECT 0 as id, "
+                "MAX(cast(regexp_replace(codigo, '" + self.grupo.codigo + "', '') as int)) as secuencia__max "
+                "FROM " + self._meta.db_table + " WHERE grupo_id = %s AND "
+                "codigo LIKE '" + self.grupo.codigo + "%%'", 
+                [self.grupo.codigo])[0].secuencia__max
             if qty is None:
                 qty = 0
             else:

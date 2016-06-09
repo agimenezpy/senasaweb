@@ -34,32 +34,6 @@ MAP
     END
     
     LAYER
-        TYPE POLYGON
-        STATUS DEFAULT
-        GROUP "default"
-        NAME "world"
-        DATA "world_borders.shp"
-        SIZEUNITS pixels
-        MAXSCALEDENOM 100000000
-        EXTENT -180 -90 180.000000 83.623596
-        METADATA
-            wms_srs "epsg:4326"
-            wms_title "world"
-            wms_group_title "default"
-        END
-        PROJECTION
-            "+init=epsg:4326"
-        END
-        CLASS
-            STYLE
-                COLOR _bg_clr
-                OUTLINECOLOR "#B3A895"
-                WIDTH 1
-            END
-        END
-    END
-
-    LAYER
         CONNECTIONTYPE postgis
         CONNECTION _db_connection
         TYPE POLYGON
